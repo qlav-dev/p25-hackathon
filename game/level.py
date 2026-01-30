@@ -15,7 +15,7 @@ class Level:
     other_players = [] # List of other players from online
 
     def __init__(self):
-        self.scale = 5
+        self.scale = 3
 
 class Projectiles:
 

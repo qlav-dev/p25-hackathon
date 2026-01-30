@@ -46,8 +46,9 @@ def main(*args):
         level.player.update(dt)
         level.player.wall_collision_manager(level)
 
-        screen.blit(level.player.sprite.image, level.player.position)
         screen.blit(level.map.map_surf, (0,0))
+        screen.blit(level.player.sprite.image, level.player.position)
+        
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s
