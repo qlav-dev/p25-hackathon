@@ -10,8 +10,9 @@ g = 30 # pesanteur
 acc = Vector2(0, g)
 
 class Level:
-    map: Map = None
+    map: Map = Map(None, None)
     player: Player = None
+    other_players = [] # List of other players from online
 
     def __init__(self):
         self.scale = 5

@@ -25,11 +25,13 @@ def main(*args):
     level.player = game.Player(
         game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
         pg.Vector2(10, 0),
-        pg.Vector2(0, 0)
+        pg.Vector2(0, 0),
+        user_name = "MyUsername"
     )
 
     online_server = game.Server(host = "localhost", port = 6379, decode_responses = True)
     online_server.create_game(1, level)
+    online_server.sync_game(1, level)
     
     #running = True
     #dt = 1
