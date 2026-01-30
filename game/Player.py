@@ -50,12 +50,30 @@ class Player:
         corners = [topleft, topright,bottomright, bottomleft]
         ls_collisions = [[]*4]
 
-        for platform in Map.platforms:
+        for object in Game.objects:
             for i in range(4):
-                if self.point_in_rect(corners[i], platform):
-                    return None
+                if (not (0 in ls_collisions[i])) and self.point_in_rect(corners[i], object):
+                    ls_collisions.append(0)
+        for projectiles in Game.entities.projectiles :
+            for i in range(4):
+                if (not (1 in ls_collisions[i])) and self.point_in_rect(corners[i], object):
+                    ls_collisions.append(1)
+        for player in Game.entities.players :
+            for i in range(4):
+                if (not (2 in ls_collisions[i])) and self.point_in_rect(corners[i], object):
+                    ls_collisions.append(2)
+
+        return ls_collisions
+    
+    def snap_grid_x():
+        return None
+
+
+    
+
+                    
                 
-                
+
         
         
 
