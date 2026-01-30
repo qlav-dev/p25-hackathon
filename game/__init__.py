@@ -2,8 +2,8 @@ from game.sprites import Sprite
 from game.holdables import Holdables, Gun
 from game.Player import Player
 from game.level import Level
-from game.map import getMap
-#import game.load_map
+from game.map import Map
+from game.load_map import getMap
 
 from redis import Redis
 from enum import Enum

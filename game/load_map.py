@@ -1,7 +1,7 @@
 import pygame as pg
 import numpy as np
-from sprites import Sprite
-from map import Map
+from game.sprites import Sprite
+from game.map import Map
 
 
 def load_map(path : str):

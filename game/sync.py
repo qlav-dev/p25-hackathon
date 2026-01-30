@@ -71,8 +71,7 @@ class Server(Redis):
 
         self.add_player_data(val, str(game_id), game) # Add yourself
 
-        print(val)
-        #return int(val)
+        return val
 
     def upload_player(self, key: str, value: int):
         self.set(key, int(value))

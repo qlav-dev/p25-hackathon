@@ -42,6 +42,9 @@ def main(*args):
     running = True
     dt = 1
 
+    total_time = 0
+    online_refresh_rate = 1
+
     while (running):
         for e in pg.event.get():
             if e.type == pg.QUIT:
@@ -58,6 +61,14 @@ def main(*args):
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s
+
+        total_time += dt 
+
+        if (total_time > online_refresh_rate):
+            online_status = online_server.sync_game(1, level)
+            print(online_status)
+
+        total_time = total_time % online_refresh_rate
 
 if __name__ == "__main__":
     main()
