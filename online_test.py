@@ -1,7 +1,6 @@
 import pygame as pg
 
 from sys import argv
-import online
 import game
 
 FPS_CAP = 60
@@ -40,12 +39,6 @@ def main(*args):
         screen.fill((255, 255, 255))
 
         level.player.update(dt)
-        if (level.player.speed.y < 40):
-            level.player.sprite.set_texture_coordinates((0,0))
-        if (level.player.speed.y > 40 and level.player.speed.y < 60):
-            level.player.sprite.set_texture_coordinates((3,0))
-        if (level.player.speed.y > 60):
-            level.player.sprite.set_texture_coordinates((4,0))
 
         screen.blit(level.player.sprite.image, level.player.position)
 
