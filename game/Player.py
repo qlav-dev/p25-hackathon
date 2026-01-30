@@ -77,28 +77,6 @@ class Player:
     def snap_grid_y(self):
         return Vector2(self.position.x, 16*scale*round(self.position.y/(16*scale)))
 
-        
-        
-        return None
-
-
-    
-
-                    
-                
-
-        
-        
-
-
-
-                    
-
-
-
-    
-    
-
 if __name__=="__main__":
     player = Player(None, Vector2(5,5), 10, 10, Vector2(0,0), 4)
 

@@ -4,9 +4,6 @@ from sys import argv
 import online
 import game
 
-class Entity:
-    ...
-
 def main(*args):
     """
     client_mode: 1 -> client, 2 -> server
