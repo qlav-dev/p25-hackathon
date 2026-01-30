@@ -10,19 +10,14 @@ acc = Vector2(0, -g)
 class Player:
     
     def __init__(self, 
-        sprite: Sprite, 
-        topleft: Vector2, 
-        width : int, 
-        height: int, 
+        sprite: Sprite,  
         position: Vector2, 
         jump_speed:float, 
         speed = Vector2(0,0)
     ):
         self.inventory : List[Holdables] = []
         self.sprite = sprite 
-        self.width = width
-        self.heigth = height
-        self.rect = pg.Rect((0, 0), (width, height))
+        self.rect = self.sprite.rect
         self.position = position
         self.speed = speed
         self.jump_speed = jump_speed
