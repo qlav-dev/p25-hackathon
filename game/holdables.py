@@ -6,4 +6,7 @@ class Holdables:
         self.sprite = sprite
 
 class Gun(Holdables):
-    ...
+    def __init__(self, sprite: Sprite, power: float, recoil: float):
+        super().__init__(sprite)
+        self.power = power
+        self.recoil = recoil
