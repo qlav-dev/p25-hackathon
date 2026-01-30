@@ -1,7 +1,6 @@
 import pygame as pg
 
 from sys import argv
-import online
 import game
 
 FPS_CAP = 60
