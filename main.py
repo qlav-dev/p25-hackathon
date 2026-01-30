@@ -27,10 +27,13 @@ def main(*args):
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 running = False
-
+    
         screen.fill((255, 255, 255))
 
+        basic.set_texture_coordinates((0,0))
+
         screen.blit(basic.texture, (10, 10))
+
         pg.display.flip()
 
 if __name__ == "__main__":
