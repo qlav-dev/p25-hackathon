@@ -4,7 +4,7 @@ from pygame import Vector2
 from game.sprites import Sprite
 from game.holdables import Holdables
 
-g = 9.8 # pesanteur
+g = 30 # pesanteur
 acc = Vector2(0, g)
 
 class Player:
