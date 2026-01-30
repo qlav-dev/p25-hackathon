@@ -72,3 +72,51 @@ def load_hitbox_rects(path : str, cell_size):
 """
 Function to load the hitboxes as PyGame rectangles.
 """
+
+scale_factor = 3
+
+map_matrix = load_map('loading/example_map.png')
+print(map_matrix)
+width = 16*16*scale_factor
+height = 16*16*scale_factor
+sprite = Sprite(pg.image.load('sprites/test_sprite.png'))
+sprite = pg.transform.scale(sprite, (16*scale_factor, 16*scale_factor))
+background = pg.Surface((width, height), pg.SRCALPHA)
+background.blit(sprite, (0,0))
+
+for i in range(len(map_matrix)):
+    for j in range(len(map_matrix[0])):
+        if map_matrix[i,j] == 2:
+            background.blit(sprite, (i*16*scale_factor, j*16*scale_factor))
+
+
+def main(*args):
+    """
+    client_mode: 1 -> client, 2 -> server
+    """
+    pg.display.init()
+
+    clock = pg.time.Clock() # Clock init
+
+    width, height = 16*16*scale_factor, 16*16*scale_factor
+    screen = pg.display.set_mode((width, height))
+    pg.display.set_caption("Slimes with guns")
+
+    
+    running = True
+    dt = 1
+
+    while (running):
+        for e in pg.event.get():
+            if e.type == pg.QUIT:
+                running = False
+    
+        screen.fill((255, 255, 255))
+
+        screen.blit(background, (0,0))
+
+        pg.display.flip()
+
+if __name__ == "__main__":
+    main()
+
