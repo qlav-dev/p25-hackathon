@@ -6,14 +6,13 @@ import game
 FPS_CAP = 60
 
 def main(*args):
-    """
-    client_mode: 1 -> client, 2 -> server
-    """
+
     pg.display.init()
 
     clock = pg.time.Clock() # Clock init
 
-    width, height = 1000, 1000
+    # screen init
+    width, height = 16 * 16 * 3, 16 * 16 * 3
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
@@ -22,12 +21,17 @@ def main(*args):
 
     # Creation du jeu:
     level = game.Level()
+    level.map = game.getMap('sprites/example_map.png', 'sprites/example_hitbox_map.png',16 * level.scale)
+    
+    #player init
     level.player = game.Player(
         game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
         pg.Vector2(10, 0),
-        pg.Vector2(0, 0)
+        pg.Vector2(0, 0),
+        user_name="Username"
     )
-    
+
+
     running = True
     dt = 1
 
@@ -38,18 +42,17 @@ def main(*args):
     
         screen.fill((255, 255, 255))
 
+        #   Physics update
         level.player.update(dt)
-        if (level.player.speed.y < 40):
-            level.player.sprite.set_texture_coordinates((0,0))
-        if (level.player.speed.y > 40 and level.player.speed.y < 60):
-            level.player.sprite.set_texture_coordinates((3,0))
-        if (level.player.speed.y > 60):
-            level.player.sprite.set_texture_coordinates((4,0))
+        level.player.wall_collision_manager(level)
 
         screen.blit(level.player.sprite.image, level.player.position)
+        screen.blit(level.map.map_surf, (0,0))
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s
 
+
+
 if __name__ == "__main__":
-    main(argv[1:])
+    main()
