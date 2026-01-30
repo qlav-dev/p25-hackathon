@@ -1,7 +1,10 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import simpledialog
 from tkinter import ttk
 import random
+
+from redis import Redis # For the ping
+from redis.exceptions import ConnectionError
 
 def configWindow() -> list[str]:
     """
@@ -20,28 +23,27 @@ def configWindow() -> list[str]:
     global load_path_lbl
 
     config = [] # The configuration of the window
-    config_inputs = []
     load_path = tk.StringVar()
 
     lbl = tk.Label(configWindow, width = 20, text=f"Username :")
     lbl.grid(row=1, column=0)
-    config_inputs.append(tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"MyUsername{random.randint(1,99)}")))
-    config_inputs[-1].grid(row=1, column=1)
+    username = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"MyUsername{random.randint(1,99)}"))
+    username.grid(row=1, column=1)
 
     lbl = tk.Label(configWindow, width = 20, text=f"Hostname :")
     lbl.grid(row=1, column=3)
-    config_inputs.append(tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"localhost")))
-    config_inputs[-1].grid(row=1, column=4)
+    hostname = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"localhost"))
+    hostname.grid(row=1, column=4)
 
     lbl = tk.Label(configWindow, width = 20, text=f"Port :")
     lbl.grid(row=2, column=3)
-    config_inputs.append(tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"6379")))
-    config_inputs[-1].grid(row=2, column=4)
+    port = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"6379"))
+    port.grid(row=2, column=4)
 
     separator = ttk.Separator(configWindow, orient='vertical')
     separator.grid(row=0, column=2, ipady=30, ipadx = 0, rowspan=5, padx = 20)
 
-    def createNew():
+    def startgame():
         global config
         global config_inputs
 
@@ -50,12 +52,23 @@ def configWindow() -> list[str]:
 
         configWindow.destroy() # Quits the window
     
+    def ping_server():
+        r = Redis(host = hostname.get(), port = port.get()) # short timeout for the test
 
-    createNew = tk.Button(configWindow, text = "Load Game", command = createNew)
-    createNew.grid(row=3, column=1)
+        try:
+            r.ping()
+            simpledialog.messagebox.showinfo("Ping result:", "Connected successfully !")
+        except ConnectionError:
+            simpledialog.messagebox.showinfo("Ping result:", "Error ! Could not connect")
+
+    startgame = tk.Button(configWindow, text = "Start Game", command = startgame)
+    startgame.grid(row=3, column=1)
+
+    check_server = tk.Button(configWindow, text = "Ping Server", command = ping_server)
+    check_server.grid(row = 3, column = 4)
     
     configWindow.mainloop()
 
-    return config
+    return {"Username" : username.get(), "Hostname" : hostname.get(), "port": port.get()}
 
 configWindow()
