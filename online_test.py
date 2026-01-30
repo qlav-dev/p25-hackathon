@@ -38,6 +38,8 @@ def main(*args):
     online_server.create_game(int(online_config["GameID"]), level)
     online_server.sync_game(int(online_config["GameID"]), level)
 
+    print(int(online_config["GameID"]))
+
 
     running = True
     dt = 1
@@ -72,6 +74,3 @@ def main(*args):
 
 if __name__ == "__main__":
     main()
-
-if __name__ == "__main__":
-    main(argv[1:])
