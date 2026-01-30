@@ -13,6 +13,8 @@ class Player:
         sprite: Sprite,  
         position: Vector2, 
         jump_speed:float, 
+        user_name : str,
+        address_mac : int,
         speed = Vector2(0,0)
     ):
         self.inventory : List[Holdables] = []
@@ -21,6 +23,8 @@ class Player:
         self.position = position
         self.speed = speed
         self.jump_speed = jump_speed
+        self.user_name = user_name
+        self.address_mac = address_mac
         
     def update_position(self, dt: float) -> Vector2:
         self.speed += acc*dt
