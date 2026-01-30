@@ -10,7 +10,7 @@ class Player:
         self.sprite = sprite 
         self.width = width
         self.heigth = height
-        self.rect = pg.Rect(0, 0, (width, height))
+        self.rect = pg.Rect((0, 0), (width, height))
         self.position = position
         self.speed = speed
         self.jump_speed = jump_speed
@@ -30,16 +30,14 @@ class Player:
     def jump(self, )->None:
         self.speed = Vector2(self.speed.x, self.jump_speed)
 
-        
-
+    def point_in_rect(point:Vector2, rect : pg.Rect)->bool:
+        return (rect.left<=point.x<=rect.left+rect.width) and (rect.top - rect.height<=point.y<=rect.top)
     
+    def collision_direction():
+        
+        return None
     
 
-        
-
-
-
-
-
-
+if __name__=="__main__":
+    player = Player(None, Vector2(5,5), 10, 10, Vector2(0,0), 4)
 
