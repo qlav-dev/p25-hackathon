@@ -1,25 +1,10 @@
 import pygame as pg
 from sys import argv
 import online
+import game
 
 class Entity:
     ...
-
-class Sprite(pg.sprite.Sprite):
-    def __init__(self, image: pg.Surface, spritesheet_size):
-        super().__init__()
-
-        self.sheet_size_px = (image.get_width(), image.get_height())
-        self.sheet_size = ()
-
-        self.sheet = image
-        self.sheet = pg.transform.scale(self.sheet, (
-            self.sheesheet_size_px[0] * self.sheet_size[0], self.sheet_size_px[1] * self.sheet_size[1])
-        )
-
-        self.texture = pg.Surface((64, 64), pg.SRCALPHA)
-        self.texture.blit(self.sheet, (0, 0))
-
 
 def main(*args):
     """
@@ -31,7 +16,10 @@ def main(*args):
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
-    basic = Sprite(pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha())
+    basic = game.Sprite(pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha(),
+    (5, 1),
+    (0, 0),
+    10)
 
     running = True
 
@@ -41,6 +29,7 @@ def main(*args):
                 running = False
 
         screen.fill((255, 255, 255))
+
         screen.blit(basic.texture, (10, 10))
         pg.display.flip()
 
