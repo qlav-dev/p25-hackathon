@@ -4,7 +4,7 @@ from pygame import Vector2
 from game.sprites import Sprite
 from game.holdables import Holdables
 
-g = 9.8 #pesanteur
+g = 9.8 # pesanteur
 acc = Vector2(0, -g)
 
 class Player:
@@ -26,12 +26,8 @@ class Player:
         self.position = position
         self.speed = speed
         self.jump_speed = jump_speed
-
-
-    def affiche():
-        return None
         
-    def update_position(self, dt:float) -> Vector2:
+    def update_position(self, dt: float) -> Vector2:
         self.speed += acc*dt
         self.position += self.speed*dt + acc * (dt ** 2) / 2
         return self.position
