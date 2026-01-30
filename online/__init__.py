@@ -1,5 +1,5 @@
+from redis import Redis
 from enum import Enum
+import json
 
-class clientType(Enum):
-    CLIENT = 1
-    SERVER = 2
+import online as sync
