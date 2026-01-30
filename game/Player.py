@@ -22,12 +22,9 @@ class Player:
         return None
         
     def update_position(self, dt:float) -> Vector2:
-        self.position += self.speed*dt
-        return self.position
-    
-    def update_speed(self, dt:float)->Vector2:
         self.speed += acc*dt
-        return self.speed
+        self.position += self.speed*dt + acc * (dt ** 2) / 2
+        return self.position
     
     def jump(self, )->None:
         self.speed = Vector2(self.speed.x, self.jump_speed)
