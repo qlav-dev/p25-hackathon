@@ -1,7 +1,9 @@
 
-from game.player import Player
+from game.Player import Player
 
 class Level:
-    scale: int = 4
     map = None
     player: Player = None
+
+    def __init__(self):
+        self.scale = 10

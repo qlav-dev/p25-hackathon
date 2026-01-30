@@ -4,11 +4,15 @@ from sys import argv
 import online
 import game
 
+FPS_CAP = 60
+
 def main(*args):
     """
     client_mode: 1 -> client, 2 -> server
     """
     pg.display.init()
+
+    clock = pg.time.Clock() # Clock init
 
     width, height = 1000, 1000
     screen = pg.display.set_mode((width, height))
@@ -21,13 +25,13 @@ def main(*args):
     level = game.Level()
     level.player = game.Player(
         game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
-        np.Vector2(0, 0),
-        np.Vector2(0, 0)
+        pg.Vector2(0, 0),
+        pg.Vector2(0, 0)
     )
     
     running = True
-    
-    i = 0
+    dt = 1
+
     while (running):
         for e in pg.event.get():
             if e.type == pg.QUIT:
@@ -35,11 +39,13 @@ def main(*args):
     
         screen.fill((255, 255, 255))
 
-        basic.set_texture_coordinates((0,0))
+        level.player.update(dt)
+        level.player.sprite.set_texture_coordinates((0,0))
 
-        screen.blit(level.player.sprite.image, (10, 10))
+        screen.blit(level.player.sprite.image, level.player.position)
 
         pg.display.flip()
+        dt = clock.tick(FPS_CAP) / 1000 # In s
 
 if __name__ == "__main__":
     main(argv[1:])
