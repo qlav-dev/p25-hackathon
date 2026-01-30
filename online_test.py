@@ -27,23 +27,26 @@ def main(*args):
         pg.Vector2(10, 0),
         pg.Vector2(0, 0)
     )
+
+    online_server = game.Server(host = "localhost", port = 6379, decode_responses = True)
+    online_server.create_game(1, level)
     
-    running = True
-    dt = 1
+    #running = True
+    #dt = 1
 
-    while (running):
-        for e in pg.event.get():
-            if e.type == pg.QUIT:
-                running = False
-    
-        screen.fill((255, 255, 255))
-
-        level.player.update(dt)
-
-        screen.blit(level.player.sprite.image, level.player.position)
-
-        pg.display.flip()
-        dt = clock.tick(FPS_CAP) / 1000 # In s
+    #while (running):
+    #    for e in pg.event.get():
+    #        if e.type == pg.QUIT:
+    #            running = False
+    #
+    #    screen.fill((255, 255, 255))
+    #
+    #    level.player.update(dt)
+    #
+    #    screen.blit(level.player.sprite.image, level.player.position)
+    #
+    #    pg.display.flip()
+    #    dt = clock.tick(FPS_CAP) / 1000 # In s
 
 if __name__ == "__main__":
     main(argv[1:])
