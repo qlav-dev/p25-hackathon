@@ -32,7 +32,7 @@ def configWindow() -> list[str]:
 
     lbl = tk.Label(configWindow, width = 20, text=f"Hostname :")
     lbl.grid(row=1, column=3)
-    hostname = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"localhost"))
+    hostname = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"192.168.153.213"))
     hostname.grid(row=1, column=4)
 
     lbl = tk.Label(configWindow, width = 20, text=f"Port :")
@@ -44,10 +44,6 @@ def configWindow() -> list[str]:
     separator.grid(row=0, column=2, ipady=30, ipadx = 0, rowspan=5, padx = 20)
 
     def startgame():
-        global config
-        global config_inputs
-
-        config = [int(i.get()) for i in config_inputs]
         #config.append(save_path.get())
 
         configWindow.destroy() # Quits the window
@@ -69,6 +65,6 @@ def configWindow() -> list[str]:
     
     configWindow.mainloop()
 
-    return {"Username" : username.get(), "Hostname" : hostname.get(), "port": port.get()}
+    return {"Username" : username.get(), "Hostname" : hostname.get(), "Port": port.get()}
 
 configWindow()
