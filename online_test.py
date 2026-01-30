@@ -35,7 +35,11 @@ def main(*args):
     )
 
     online_server = game.Server(host = online_config["Hostname"], port = online_config["Port"], decode_responses = True)
-    online_server.create_game(int(online_config["GameID"]), level)
+
+    if (online_server.get(int(online_config["GameID"])) == None):
+        # On cree la game
+        online_server.create_game(int(online_config["GameID"]), level)
+        
     online_server.sync_game(int(online_config["GameID"]), level)
 
     print(int(online_config["GameID"]))
