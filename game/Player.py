@@ -14,7 +14,6 @@ class Player:
         position: Vector2, 
         jump_speed:float, 
         user_name : str,
-        address_mac : int,
         speed = Vector2(0,0)
     ):
         self.inventory : List[Holdables] = []
@@ -24,7 +23,7 @@ class Player:
         self.speed = speed
         self.jump_speed = jump_speed
         self.user_name = user_name
-        self.address_mac = address_mac
+        self.address_mac = None
         
     def update_position(self, dt: float) -> Vector2:
         self.speed += acc*dt
@@ -138,7 +137,6 @@ class Player:
                 else:
                     self.snap_grid_y
 
-            
 
 
 if __name__=="__main__":

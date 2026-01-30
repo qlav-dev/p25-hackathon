@@ -16,6 +16,13 @@ Architecture du stockage serveur:
             held_object: UNIQUE IDENTIFIER
         } 
         ...
+        projectiles : [
+            {type: int,
+            position: {x: FLOAT, y: FLOAT}
+            speed: {x: FLOAT, y: FLOAT}
+            }
+            ...
+        ]
     }
 }
 """
