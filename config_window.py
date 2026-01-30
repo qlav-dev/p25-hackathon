@@ -45,6 +45,8 @@ def configWindow() -> list[str]:
 
     def startgame():
         #config.append(save_path.get())
+        global output
+        output = {"Username" : username.get(), "Hostname" : hostname.get(), "Port": port.get()}
 
         configWindow.destroy() # Quits the window
     
@@ -65,6 +67,6 @@ def configWindow() -> list[str]:
     
     configWindow.mainloop()
 
-    return {"Username" : username.get(), "Hostname" : hostname.get(), "Port": port.get()}
+    return output
 
 configWindow()

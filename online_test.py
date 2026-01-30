@@ -6,9 +6,6 @@ import config_window
 
 FPS_CAP = 60
 
-if __name__ == "__main__":
-    main()
-
 def main(*args):
 
     online_config = config_window.configWindow()
@@ -61,6 +58,9 @@ def main(*args):
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s
+
+if __name__ == "__main__":
+    main()
 
 if __name__ == "__main__":
     main(argv[1:])
