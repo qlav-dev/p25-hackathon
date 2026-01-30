@@ -42,9 +42,9 @@ def configWindow() -> list[str]:
 
 
     lbl = tk.Label(configWindow, width = 20, text=f"Game ID :")
-    lbl.grid(row=2, column=1)
+    lbl.grid(row=2, column=0)
     idgame = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"1"))
-    port.grid(row=2, column=2)
+    idgame.grid(row=2, column=1)
 
 
     separator = ttk.Separator(configWindow, orient='vertical')
