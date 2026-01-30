@@ -9,16 +9,16 @@ class Server(Redis):
         """
         super().__init__(*args, **kwargs)
 
-    def sync_game(self, key: str, ) -> ...:
+    def sync_game(self, game_id: str, ) -> ...:
         """
         Upload les coordonnées et status du joueur.
         Telecharge les données des autres joueurs.
         """
 
 
-        val = self.get(key)
+        val = self.get(game_id)
         if val is None:
-            return default
+            raise AttributeError("Ce `game_id` n'est pas défini")
         return int(val)
 
     def upload_player(self, key: str, value: int):
@@ -27,6 +27,6 @@ class Server(Redis):
 if __name__ == "__main__":
     x = Server(host = "localhost", port = 6379, decode_responses = True)
 
-    online_state = x.sync_game()
+    online_state = x.sync_game(1)
     print(online_state)
     
