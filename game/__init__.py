@@ -1,0 +1,1 @@
+from game.sprites import Sprite
