@@ -1,4 +1,5 @@
 import pygame as pg
+
 from sys import argv
 import online
 import game
@@ -19,10 +20,12 @@ def main(*args):
     basic = game.Sprite(pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha(),
     (5, 1),
     (0, 0),
-    10)
+    5,
+    hue_offset=0.4)
 
     running = True
-
+    
+    i = 0
     while (running):
         for e in pg.event.get():
             if e.type == pg.QUIT:
