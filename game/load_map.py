@@ -1,6 +1,8 @@
 import pygame as pg
 import numpy as np
 from sprites import Sprite
+from map import Map
+
 
 def load_map(path : str):
     surf = pg.image.load(path)
@@ -68,58 +70,43 @@ def array_to_rect(rectangles):
         py_rects.append(pg.Rect(x0, y0, width, height))
     return py_rects
 
-def load_hitbox_rects(path : str, cell_size):
+def getHitboxRects(path : str, cell_size):
     return array_to_rect(load_hitbox_array(path, cell_size))
 """
 Function to load the hitboxes as PyGame rectangles.
 """
 
-scale_factor = 3
+def getSurface(path : str, cell_size):
+    scale_factor = cell_size / 16
 
+    map_matrix = load_map(path)
 
+    map_height = len(map_matrix)
+    map_width = len(map_matrix[0])
 
+    width, height = map_width*cell_size, map_height*cell_size
 
-def main(*args):
-    """
-    client_mode: 1 -> client, 2 -> server
-    """
-    pg.display.init()
-
-    clock = pg.time.Clock() # Clock init
-
-    width, height = 16*16*scale_factor, 16*16*scale_factor
-    screen = pg.display.set_mode((width, height))
-    pg.display.set_caption("Slimes with guns")
-
-    map_matrix = load_map('sprites/example_map.png')
-    print(map_matrix)
-    width = 16*16*scale_factor
-    height = 16*16*scale_factor
     terrain_spritesheet = pg.image.load("sprites/terrain-basic-spritesheet.png")
     sprite_grass = Sprite(terrain_spritesheet, (1, 2), (0, 0), scale_factor, hue_offset=0)
+    sprite_dirt = Sprite(terrain_spritesheet, (1, 2), (0, 1), scale_factor, hue_offset=0)
 
     background = pg.Surface((width, height), pg.SRCALPHA)
-    background.blit(sprite_grass.image, (0,0))
-
     for i in range(len(map_matrix)):
         for j in range(len(map_matrix[0])):
             if map_matrix[i,j] == 2:
-                background.blit(sprite_grass.image, (i*16*scale_factor, j*16*scale_factor))
-                
-    running = True
-    dt = 1
+                background.blit(sprite_dirt.image, (i*cell_size, j*cell_size))
+            elif map_matrix[i,j] == 1:
+                background.blit(sprite_grass.image, (i*cell_size, j*cell_size))
 
-    while (running):
-        for e in pg.event.get():
-            if e.type == pg.QUIT:
-                running = False
-    
-        screen.fill((255, 255, 255))
+    return background
 
-        screen.blit(background, (0,0))
+"""
+cell_size is in terms of coordinates that are used by the physics engine.
+"""
+def getMap(surface_path : str, collider_path : str, cell_size):
+    surface = getSurface(surface_path, cell_size)
+    collider = getHitboxRects(collider_path, cell_size)
+    return Map(surface, collider)
 
-        pg.display.flip()
 
-if __name__ == "__main__":
-    main()
 
