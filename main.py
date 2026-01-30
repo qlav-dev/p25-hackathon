@@ -1,10 +1,10 @@
 import pygame as pg
+
 from sys import argv
 import online
 import game
 
-class Entity:
-    ...
+FPS_CAP = 60
 
 def main(*args):
     """
@@ -12,26 +12,40 @@ def main(*args):
     """
     pg.display.init()
 
+    clock = pg.time.Clock() # Clock init
+
     width, height = 1000, 1000
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
-    basic = game.Sprite(pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha(),
-    (5, 1),
-    (0, 0),
-    10)
+    # Chargement des ressources
+    player_spritesheet = pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha()
 
+    # Creation du jeu:
+    level = game.Level()
+    level.player = game.Player(
+        game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
+        pg.Vector2(0, 0),
+        pg.Vector2(0, 0)
+    )
+    
     running = True
+    dt = 1
 
     while (running):
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 running = False
-
+    
         screen.fill((255, 255, 255))
 
-        screen.blit(basic.texture, (10, 10))
+        level.player.update(dt)
+        level.player.sprite.set_texture_coordinates((0,0))
+
+        screen.blit(level.player.sprite.image, level.player.position)
+
         pg.display.flip()
+        dt = clock.tick(FPS_CAP) / 1000 # In s
 
 if __name__ == "__main__":
     main(argv[1:])
