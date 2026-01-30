@@ -35,8 +35,8 @@ class Server(Redis):
         super().__init__(*args, **kwargs)
         self.mac_address = get_mac()
 
-    def add_player_data(self, game_state: dict, game_id: int, game: Level):
-        game_state[game_id][f"{self.mac_address}"] = {
+    def add_player_data(self, game_state: dict, game_id: str, game: Level):
+        game_state[game_id][f"{self.mac_address}-{game.player.user_name}"] = {
             "position": {
                 "x": game.player.position.x,
                 "y": game.player.position.y,
@@ -48,6 +48,7 @@ class Server(Redis):
         }
 
     def create_game(self, game_id: int, game: Level):
+        game_id = str(game_id)
 
         # With us as only player
         initial_game_state = {
@@ -56,20 +57,22 @@ class Server(Redis):
             }
         }
         self.add_player_data(initial_game_state, game_id, game)
-        self.set(game_id, 
-        )
+        self.set(game_id, json.dumps(initial_game_state))
 
-    def sync_game(self, game_id: int, ) -> ...:
+    def sync_game(self, game_id: int, game: Level) -> ...:
         """
         Upload les coordonnées et status du joueur.
         Telecharge les données des autres joueurs.
         """
 
-
-        val = self.get(game_id)
+        val = json.loads(self.get(game_id))
         if val is None:
             raise AttributeError("Ce `game_id` n'est pas défini")
-        return int(val)
+
+        self.add_player_data(val, str(game_id), game) # Add yourself
+
+        print(val)
+        #return int(val)
 
     def upload_player(self, key: str, value: int):
         self.set(key, int(value))
