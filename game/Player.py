@@ -65,7 +65,9 @@ class Player:
 
         return ls_collisions
     
-    def snap_grid_x():
+    def snap_grid_x(self, ):
+        
+        
         return None
 
 
