@@ -68,5 +68,3 @@ def configWindow() -> list[str]:
     configWindow.mainloop()
 
     return output
-
-configWindow()
