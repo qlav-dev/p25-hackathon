@@ -76,19 +76,7 @@ Function to load the hitboxes as PyGame rectangles.
 
 scale_factor = 3
 
-map_matrix = load_map('loading/example_map.png')
-print(map_matrix)
-width = 16*16*scale_factor
-height = 16*16*scale_factor
-sprite = Sprite(pg.image.load('sprites/test_sprite.png'))
-sprite = pg.transform.scale(sprite, (16*scale_factor, 16*scale_factor))
-background = pg.Surface((width, height), pg.SRCALPHA)
-background.blit(sprite, (0,0))
 
-for i in range(len(map_matrix)):
-    for j in range(len(map_matrix[0])):
-        if map_matrix[i,j] == 2:
-            background.blit(sprite, (i*16*scale_factor, j*16*scale_factor))
 
 
 def main(*args):
@@ -103,7 +91,22 @@ def main(*args):
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
-    
+    map_matrix = load_map('sprites/example_map.png')
+    print(map_matrix)
+    width = 16*16*scale_factor
+    height = 16*16*scale_factor
+    player_spritesheet = pg.image.load(r"sprites/slime-basic-spritesheet.png")
+    sprite = Sprite(pg.image.load('sprites/terrain-basic-spritesheet.png'))
+    (player_spritesheet, (1, 2), (0, 0), level.scale, hue_offset=0)
+    sprite = pg.transform.scale(sprite, (16*scale_factor, 16*scale_factor))
+    background = pg.Surface((width, height), pg.SRCALPHA)
+    background.blit(sprite, (0,0))
+
+    for i in range(len(map_matrix)):
+        for j in range(len(map_matrix[0])):
+            if map_matrix[i,j] == 2:
+                background.blit(sprite, (i*16*scale_factor, j*16*scale_factor))
+                
     running = True
     dt = 1
 
