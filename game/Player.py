@@ -65,7 +65,12 @@ class Player:
 
         return ls_collisions
     
-    def snap_grid_x(self, ):
+    def snap_grid_x(self):
+        return Vector2(16*scale*round(self.position.x/(16*scale)), self.position.y)
+    
+    def snap_grid_y(self):
+        return Vector2(self.position.x, 16*scale*round(self.position.y/(16*scale)))
+
         
         
         return None
