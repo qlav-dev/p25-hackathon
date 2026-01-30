@@ -14,12 +14,17 @@ def main(*args):
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
-    basic = game.Sprite(pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha(),
-    (5, 1),
-    (0, 0),
-    5,
-    hue_offset=0.4)
+    # Chargement des ressources
+    player_spritesheet = pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha()
 
+    # Creation du jeu:
+    level = game.Level()
+    level.player = game.Player(
+        game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
+        np.Vector2(0, 0),
+        np.Vector2(0, 0)
+    )
+    
     running = True
     
     i = 0
@@ -32,7 +37,7 @@ def main(*args):
 
         basic.set_texture_coordinates((0,0))
 
-        screen.blit(basic.texture, (10, 10))
+        screen.blit(level.player.sprite.image, (10, 10))
 
         pg.display.flip()
 
