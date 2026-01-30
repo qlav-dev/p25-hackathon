@@ -27,7 +27,7 @@ class Player:
         self.position += self.speed*dt + acc * (dt ** 2) / 2
         if self.position.y>=1000 :
             self.speed.y = 0
-            self.position.y = 1000
+            self.position.y = 1000-16*scale
         return self.position
 
     def update(self, dt: float) -> None:
@@ -50,8 +50,17 @@ class Player:
         topright = self.position + Vector2(self.width,0)
         bottomright = self.position + Vector2(self.width, self.heigth)
         bottomleft = self.position + Vector2(0, -self.height)
-        
+        tp0 = self.position + 1/16*Vector2(self.width,0)
+        tp1 = self.position + 15/16*Vector2(self.width, 0)
+        tp2 = self.position + 15/16*Vector2(self.width, 0)
+        tp3 = self.position + 15/16*Vector2(self.width, 0)
+        tp4 = self.position + 15/16*Vector2(self.width, 0)
+        tp5 = self.position + 15/16*Vector2(self.width, 0)
+        tp6 = self.position + 15/16*Vector2(self.width, 0)
+        tp7 = self.position + 15/16*Vector2(self.width, 0)
+
         corners = [topleft, topright,bottomright, bottomleft]
+        trigger_points = []
         ls_collisions = [[]*4]
 
         for object in Game.objects:
