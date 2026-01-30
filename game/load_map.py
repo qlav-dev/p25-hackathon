@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+from game.sprites import Sprite
 
 def load_map(path : str):
     surf = pg.image.load(path)
