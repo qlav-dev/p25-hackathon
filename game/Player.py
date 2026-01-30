@@ -54,17 +54,9 @@ class Player:
         topright = self.position + Vector2(self.width,0)
         bottomright = self.position + Vector2(self.width, self.heigth)
         bottomleft = self.position + Vector2(0, -self.height)
-        tp0 = self.position + 1/16*Vector2(self.width,0)
-        tp1 = self.position + 15/16*Vector2(self.width, 0)
-        tp2 = self.position + 1/16*Vector2(16*self.width, self.height)
-        tp3 = self.position + 1/16*Vector2(16*self.width, 15*self.height)
-        tp4 = self.position + 1/16*Vector2(15*self.width, 16*self.height)
-        tp5 = self.position + 1/16*Vector2(self.width, 16*self.height)
-        tp6 = self.position + 1/16*Vector2(0, 15*self.height)
-        tp7 = self.position + 1/16*Vector2(0,self.height)
 
         corners = [topleft, topright,bottomright, bottomleft]
-        trigger_points = [tp0,tp1,tp2,tp3,tp4,tp5,tp6,tp7]
+        
         ls_collisions = [[]*4]
 
         for object in Game.objects:
@@ -90,7 +82,24 @@ class Player:
     def snap_grid_y(self):
         return Vector2(self.position.x, 16*scale*round(self.position.y/(16*scale)))
     
-    def gestion_collision(self):
+    def gestion_collision(self)->None:
+        """
+        Permet de snap le personnage sur la grille en cas de collision avec les plateformes
+        Trigger points : permet de préciser le contact avec un obstacle dans le cas où un seul coin touche
+        2 trigger points par coin espacés d'1/16 de sa taille
+        Trigger points numérotés dans le sens horaire en partant du coin en haut à gauche (cf convention)
+        A = ensemble des trigger points qui si activés impliquent snap sur abscisses (O serait par exemple [0,1,4,5])
+
+        """
+        tp0 = self.position + 1/16*Vector2(self.width,0)
+        tp1 = self.position + 15/16*Vector2(self.width, 0)
+        tp2 = self.position + 1/16*Vector2(16*self.width, self.height)
+        tp3 = self.position + 1/16*Vector2(16*self.width, 15*self.height)
+        tp4 = self.position + 1/16*Vector2(15*self.width, 16*self.height)
+        tp5 = self.position + 1/16*Vector2(self.width, 16*self.height)
+        tp6 = self.position + 1/16*Vector2(0, 15*self.height)
+        tp7 = self.position + 1/16*Vector2(0,self.height)
+        trigger_points = [tp0,tp1,tp2,tp3,tp4,tp5,tp6,tp7]
         L = self.collision_direction()
         A = [2,3,6,7]
         if (0 in L[2]and L[3]) or (0 in L[0] and 0 in L[1]): # collision avec le sol ou le plafond
@@ -99,21 +108,25 @@ class Player:
         if (0 in L[0] and 0 in L[3]) or (0 in L[1] and 0 in L[2]): # collision avec mur gauche ou mur droit
             self.position = self.snap_grid_x
 
-        elif (0 in L[0] ^ 0 in L[1] ^ 0 in L[2] ^ 0 in L[3]):
+        elif (0 in L[0] ^ 0 in L[1] ^ 0 in L[2] ^ 0 in L[3]): # collision d'un seul coin
             index = 0
+            # On récupère l'indice du coin entré en collision
             for i in range(4):
                 if 0 in L[i]:
                     index = i
+            # On nomme les deux trigger points associés au coin
+            point1 = trigger_points[(2*index-1)%8] 
+            point2 = trigger_points[(2*index)%8]
             touch1 = False
             touch2 = False
-            point1 = trigger_points[(2*index-1)%8]
-            point2 = trigger_points[(2*index)%8]
+            # On regarde lequel des deux touche qqch
             for platform in Map.platforms : 
                 if self.point_in_rect(point1, platform):
                     touch1 = True
             for platform in Map.platforms : 
                 if self.point_in_rect(point2, platform):
                     touch2 = True
+            # Si c'est un point abscisse, on snap l'abscisse, sinon l'ordonnée
             if touch1:
                 if (2*index-1)%8 in A:
                     self.snap_grid_x
