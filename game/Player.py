@@ -29,7 +29,7 @@ class Player:
     def update_position(self, dt: float) -> Vector2:
         self.speed += acc*dt
         self.position += self.speed*dt + acc * (dt ** 2) / 2
-        if self.position.y>=1000 :
+        if self.position.y>=1000-16*scale :
             self.speed.y = 0
             self.position.y = 1000-16*scale
         return self.position
