@@ -6,4 +6,4 @@ class Level:
     player: Player = None
 
     def __init__(self):
-        self.scale = 10
+        self.scale = 5

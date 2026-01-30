@@ -25,7 +25,7 @@ def main(*args):
     level = game.Level()
     level.player = game.Player(
         game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
-        pg.Vector2(0, 0),
+        pg.Vector2(10, 0),
         pg.Vector2(0, 0)
     )
     
@@ -40,7 +40,12 @@ def main(*args):
         screen.fill((255, 255, 255))
 
         level.player.update(dt)
-        level.player.sprite.set_texture_coordinates((0,0))
+        if (level.player.speed.y < 40):
+            level.player.sprite.set_texture_coordinates((0,0))
+        if (level.player.speed.y > 40 and level.player.speed.y < 60):
+            level.player.sprite.set_texture_coordinates((3,0))
+        if (level.player.speed.y > 60):
+            level.player.sprite.set_texture_coordinates((4,0))
 
         screen.blit(level.player.sprite.image, level.player.position)
 
