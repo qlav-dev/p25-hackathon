@@ -62,7 +62,7 @@ class Player:
         for platform in level.map.map_collider:
             for i in range(4):
                 if (not (0 in ls_collisions[i])) and self.point_in_rect(corners[i], platform):
-                    ls_collisions.append(0)
+                    ls_collisions[i].append(0)
         # for projectiles in Game.entities.projectiles :
         #     for i in range(4):
         #         if (not (1 in ls_collisions[i])) and self.point_in_rect(corners[i], object):
@@ -103,10 +103,10 @@ class Player:
         L = self.collision_direction(level)
         A = [2,3,6,7]
         if (0 in L[2]and L[3]) or (0 in L[0] and 0 in L[1]): # collision avec le sol ou le plafond
-            self.position = self.snap_grid_y
+            self.position = self.snap_grid_y()
 
         if (0 in L[0] and 0 in L[3]) or (0 in L[1] and 0 in L[2]): # collision avec mur gauche ou mur droit
-            self.position = self.snap_grid_x
+            self.position = self.snap_grid_x()
 
         elif ((0 in L[0]) ^ (0 in L[1]) ^ (0 in L[2]) ^ (0 in L[3])): # collision d'un seul coin
             index = 0
