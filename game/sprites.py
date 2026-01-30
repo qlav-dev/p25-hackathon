@@ -54,7 +54,9 @@ class Sprite(pg.sprite.Sprite):
         self.text_coordinates = default_text_coordinates
 
         # Texture de la taille d'un sprite de la sheet
-        self.cropped_texture = pg.Surface((self.size[0], self.size[1]), pg.SRCALPHA)
+        self.image = pg.Surface((self.size[0], self.size[1]), pg.SRCALPHA)
+        self.rect = self.image.get_rect()
+
         self.texture = pg.Surface((self.size[0] * self.scale, self.size[1] * self.scale), pg.SRCALPHA)
 
         self.hue_shift(self.hue_offset)
@@ -63,10 +65,10 @@ class Sprite(pg.sprite.Sprite):
     def set_texture_coordinates(self, coordinates: tuple) -> None:
 
         self.text_coordinates = coordinates
-        self.cropped_texture = pg.Surface((self.size[0], self.size[1]), pg.SRCALPHA)
+        self.image = pg.Surface((self.size[0], self.size[1]), pg.SRCALPHA)
 
-        self.cropped_texture.fill((0,0,0,0))
-        self.cropped_texture.blit(self.sheet, (-self.size[0] * self.text_coordinates[0], -self.size[1] * self.text_coordinates[1]))
+        self.image.fill((0,0,0,0))
+        self.image.blit(self.sheet, (-self.size[0] * self.text_coordinates[0], -self.size[1] * self.text_coordinates[1]))
 
-        pg.transform.scale(self.cropped_texture, (self.size[0] * self.scale, self.size[1] * self.scale), self.texture)
+        pg.transform.scale(self.image, (self.size[0] * self.scale, self.size[1] * self.scale), self.texture)
         
