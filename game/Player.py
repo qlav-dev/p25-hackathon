@@ -14,6 +14,7 @@ class Player:
         position: Vector2, 
         jump_speed:float, 
         user_name : str,
+        HP : int,
         speed = Vector2(0,0)
     ):
         self.inventory : List[Holdables] = []
@@ -24,6 +25,7 @@ class Player:
         self.jump_speed = jump_speed
         self.user_name = user_name
         self.address_mac = None
+        self.HP = HP
         
     def update_position(self, dt: float) -> Vector2:
         self.speed += acc*dt
@@ -40,7 +42,7 @@ class Player:
         self.speed = Vector2(self.speed.x, self.jump_speed)
 
     def point_in_rect(point:Vector2, rect : pg.Rect)->bool:
-        return (rect.left<=point.x<=rect.left+rect.width) and (rect.top - rect.height<=point.y<=rect.top)
+        return (rect.left<=point.x<=rect.left+rect.width) and (rect.top + rect.height>=point.y>=rect.top)
     
     def collision_direction(self)->list[list[int]]:
         """
@@ -52,13 +54,13 @@ class Player:
         topleft = self.position
         topright = self.position + Vector2(self.width,0)
         bottomright = self.position + Vector2(self.width, self.heigth)
-        bottomleft = self.position + Vector2(0, -self.height)
+        bottomleft = self.position + Vector2(0, self.height)
 
         corners = [topleft, topright,bottomright, bottomleft]
         
         ls_collisions = [[]*4]
 
-        for object in Game.objects:
+        for platform in Map.map_collider:
             for i in range(4):
                 if (not (0 in ls_collisions[i])) and self.point_in_rect(corners[i], object):
                     ls_collisions.append(0)
@@ -81,7 +83,7 @@ class Player:
     def snap_grid_y(self):
         return Vector2(self.position.x, 16*scale*round(self.position.y/(16*scale)))
     
-    def gestion_collision(self)->None:
+    def gestion_collision_murs(self)->None:
         """
         Permet de snap le personnage sur la grille en cas de collision avec les plateformes
         Trigger points : permet de préciser le contact avec un obstacle dans le cas où un seul coin touche
@@ -136,6 +138,12 @@ class Player:
                     self.snap_grid_x
                 else:
                     self.snap_grid_y
+
+    def gestion_collision_proj(self)->None:
+        return None
+
+
+        
 
 
 
