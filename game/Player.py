@@ -2,13 +2,23 @@ import pygame as pg
 from pygame import Vector2
 
 from game.sprites import Sprite
+from game.holdables import Holdables
 
 g = 9.8 #pesanteur
 acc = Vector2(0, -g)
 
 class Player:
     
-    def __init__(self, sprite: Sprite, topleft: Vector2, width : int, height: int, position: Vector2, jump_speed:float, speed=Vector2(0,0)):
+    def __init__(self, 
+        sprite: Sprite, 
+        topleft: Vector2, 
+        width : int, 
+        height: int, 
+        position: Vector2, 
+        jump_speed:float, 
+        speed = Vector2(0,0)
+    ):
+        self.inventory : List[Holdables] = []
         self.sprite = sprite 
         self.width = width
         self.heigth = height
@@ -25,6 +35,9 @@ class Player:
         self.speed += acc*dt
         self.position += self.speed*dt + acc * (dt ** 2) / 2
         return self.position
+
+    def update(self, dt: float) -> None:
+        self.update_position(dt)
     
     def jump(self, )->None:
         self.speed = Vector2(self.speed.x, self.jump_speed)
