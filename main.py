@@ -18,6 +18,7 @@ def main(*args):
 
     # Chargement des ressources
     player_spritesheet = pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha()
+    gun = pg.image.load(r"sprites/gun-basic.png").convert_alpha()
 
     # Creation du jeu:
     level = game.Level()
@@ -25,10 +26,19 @@ def main(*args):
     
     #player init
     level.player = game.Player(
-        game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
-        pg.Vector2(10, 0),
-        user_name="Username"
+        sprite = game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset = 0),
+        position = pg.Vector2(10, 0),
+        user_name = "Username"
     )
+
+    # Default gun
+    level.player.inventory = [
+        game.Gun(
+            sprite = game.Sprite(gun, (1,1), (0,0), level.scale, hue_offset = 0),
+            power = 10000,
+            recoil = .5
+        )
+    ]
 
 
     running = True
@@ -38,7 +48,13 @@ def main(*args):
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 running = False
-    
+            
+            if e.type == pg.MOUSEBUTTONDOWN:
+                mousePos = pg.Vector2(pg.mouse.get_pos())
+                if pg.mouse.get_pressed(3)[0]:
+                    fire_direction = (level.player.position + pg.Vector2(level.player.rect.width / 2, level.player.rect.height / 2) - mousePos).normalize()
+                    level.player.inventory[level.player.holding].fire(level.player, fire_direction)
+            
         screen.fill((255, 255, 255))
 
         #   Physics update

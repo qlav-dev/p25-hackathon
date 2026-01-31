@@ -4,7 +4,6 @@ from game.sprites import Sprite
 from game.holdables import Holdables
 
 g = 50 # pesanteur
-acc = Vector2(0, g)
 
 class Player:
     
@@ -14,11 +13,16 @@ class Player:
         user_name : str,
     ):
         self.inventory : List[Holdables] = []
+        self.holding: int = 0 # Which inventory item is the player holding
+
         self.sprite = sprite 
         self.rect = self.sprite.rect
-        self.position = position
 
+        self.position = position
         self.speed = Vector2(0,0)
+        self.acc = Vector2(0, g)
+
+        self.grounded = False
 
         self.user_name = user_name
         self.mac_address = None
@@ -26,13 +30,8 @@ class Player:
         self.HP = 100
 
     def update(self, dt: float, level) -> None:
-
-        mousePos = Vector2(pg.mouse.get_pos())
-        if pg.mouse.get_pressed(3)[0]:
-            v = (self.position + Vector2(self.sprite.rect.width / 2, self.sprite.rect.height / 2) - mousePos).normalize()
-            self.speed += acc.length() * 10 * v * dt
-
         self.update_position(dt, level)
+        self.acc = Vector2(0, g) # After the update_position : If the gun is fired, resets the acc AFTER the position was updated
     
     def collide_rect(self, rect):
 
@@ -46,13 +45,13 @@ class Player:
 
     def update_position(self, dt: float, level) -> None:
 
-        self.speed += acc * dt
+        self.speed += self.acc * dt
 
         player_height = self.sprite.rect.height
         player_width = self.sprite.rect.width
 
         # X
-        self.position.x += self.speed.x * dt + acc.x * (dt ** 2) / 2
+        self.position.x += self.speed.x * dt + self.acc.x * (dt ** 2) / 2
         for c in level.map.map_collider:
             if self.collide_rect(c):
                 if (self.speed.x > 0):
@@ -62,10 +61,13 @@ class Player:
                 self.speed.x = 0
             
         # Y
-        self.position.y += self.speed.y * dt + acc.y * (dt ** 2) / 2
+        self.position.y += self.speed.y * dt + self.acc.y * (dt ** 2) / 2
+
+        self.grounded = False
         for c in level.map.map_collider:
             if self.collide_rect(c):
                 if (self.speed.y > 0):
+                    self.grounded = True
                     self.position.y = c.topleft[1] - player_height
                 else:
                     self.position.y = c.topleft[1] + c.height
