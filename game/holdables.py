@@ -117,6 +117,6 @@ class Projectiles(PhysicsEntity):
 
         self.active = (self.position - level.player.position).length() < self.despawn_distance and self.lifespan < self.total_lifespan
 
-        self.acc = Vector2(0, level.g / self.mass)
+        self.acc = Vector2(0, level.g)
         self.lifespan +=  dt
 
