@@ -27,6 +27,7 @@ class PhysicsEntity:
 
         self.grounded = False
         self.ground_friction = 1.2
+        self.air_friction = 1.01
 
         self.HP = 50
 
@@ -50,8 +51,9 @@ class PhysicsEntity:
 
         self.speed += self.acc * dt
 
-        # X
+        # X (sauf air friction)
         self.position.x += self.speed.x * dt
+        
         for c in level.map.map_collider:
             if self.collide_rect(c):
                 if (self.speed.x > 0):
@@ -73,3 +75,7 @@ class PhysicsEntity:
                 else:
                     self.position.y = c.topleft[1] + c.height - self.hitbox.topleft[1]
                 self.speed.y = 0
+
+        #X: air friction
+        if not self.grounded:
+            self.speed.x /= self.air_friction
