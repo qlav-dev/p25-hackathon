@@ -27,7 +27,7 @@ class PhysicsEntity:
 
         self.grounded = False
         self.ground_friction = 1.2 
-        self.grounded_timer = 10 # in frames, to prevent grounded from flickering
+        self.grounded_timer = 20 # in frames, to prevent grounded from flickering
         self.grounded_time = 0
 
         self.HP = 50
