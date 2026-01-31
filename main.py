@@ -3,6 +3,8 @@ import pygame as pg
 from sys import argv
 import game
 
+from random import randint
+
 FPS_CAP = 60
 
 def main(*args):
@@ -27,7 +29,7 @@ def main(*args):
     
     #player init
     level.player = game.Player(
-        sprite = game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset = 0),
+        sprite = game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset = randint(0, 1000) / 1000),
         position = pg.Vector2(10, 0),
         user_name = "Username",
         mass = 5
@@ -35,14 +37,7 @@ def main(*args):
 
     # Default gun
     level.player.inventory = [
-        game.Gun(
-            sprite = game.Sprite(gun_sprite, (1,1), (0,0), level.scale, hue_offset = 0),
-            power = 50000,
-            recoil = .5,
-            projectile_sprite = game.Sprite(projectile_sprite, (1,1), (0,0), level.scale, hue_offset = 0),
-            damage = 1,
-            projectile_mass = 1
-        )
+        game.prefabs.triple_gun(gun_sprite, projectile_sprite, level.scale),
     ]
 
 
@@ -60,7 +55,7 @@ def main(*args):
                     fire_direction = (level.player.position + pg.Vector2(level.player.rect.width / 2, level.player.rect.height / 2) - mousePos).normalize()
                     level.player.inventory[level.player.holding].fire(level, fire_direction)
             
-        screen.fill((255, 255, 255))
+        screen.fill((0, 230, 255))
 
         # Physics update
         level.player.inventory[level.player.holding].update(dt, level.player)
