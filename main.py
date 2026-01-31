@@ -21,7 +21,7 @@ def main(*args):
     # Chargement des ressources
     player_spritesheet = pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha()
     gun_sprite = pg.image.load(r"sprites/gun-basic.png").convert_alpha()
-    projectile_sprite = pg.image.load(r"sprites/projectile-basic.png").convert_alpha()
+    projectile_sprite = pg.image.load(r"sprites/small-projectile.png").convert_alpha()
 
     # Creation du jeu:
     level = game.Level()
@@ -29,15 +29,19 @@ def main(*args):
     
     #player init
     level.player = game.Player(
+        username = "Username",
         sprite = game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset = randint(0, 1000) / 1000),
         position = pg.Vector2(100, 0),
-        user_name = "Username",
-        mass = 5
+        mass = 5,
     )
+
+    triple_gun = game.prefabs.triple_gun(gun_sprite, projectile_sprite, level.scale)
+    # makes hitbox smaller
+    triple_gun.projectile_hitbox = pg.rect.Rect(level.scale * 7, level.scale * 7, level.scale * 2, level.scale * 2) 
 
     # Default gun
     level.player.inventory = [
-        game.prefabs.triple_gun(gun_sprite, projectile_sprite, level.scale),
+        triple_gun,
     ]
 
 
@@ -64,20 +68,20 @@ def main(*args):
         for proj in level.projectiles:
             proj.update(dt, level)
 
-        # Kills projectiles that are too far away
-        level.projectiles = [i for i in level.projectiles if (i.position - level.player.position).length() < i.despawn_distance]
+        # Kills projectiles that needs to be killed
+        level.projectiles = [i for i in level.projectiles if i.active]
 
         # --- RENDER --- #
 
         # Render player
         screen.blit(level.player.sprite.image, level.player.position)
-        
-        # Render projectiles
-        for proj in level.projectiles:
-            screen.blit(proj.sprite.image, proj.position)
 
         # Render map
         screen.blit(level.map.map_surf, (0,0))
+
+        # Render projectiles
+        for proj in level.projectiles:
+            screen.blit(proj.sprite.image, proj.position)
 
         # Render gun
         screen.blit(pg.transform.rotate(level.player.inventory[level.player.holding].sprite.image, 

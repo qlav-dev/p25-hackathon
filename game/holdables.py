@@ -34,7 +34,8 @@ class Gun(Holdables):
         self.time_since_last_fire += dt
 
 class BasicGun(Gun):
-    
+    projectile_hitbox: pg.rect.Rect = pg.rect.Rect(7, 7, 2, 2)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -52,7 +53,8 @@ class BasicGun(Gun):
                     emitter = level.player,
                     position = copy.copy(level.player.position),
                     damage = self.damage,
-                    acc = -self.power * fire_direction / self.projectile_mass
+                    acc = -self.power * fire_direction / self.projectile_mass,
+                    hitbox = self.projectile_hitbox
                 )
             )
 
@@ -87,25 +89,34 @@ class MultiGun(Gun):
                         emitter = level.player,
                         position = copy.copy(level.player.position),
                         damage = self.damage,
-                        acc = -(self.power / self.no_shots) * angle / self.projectile_mass
+                        acc = -(self.power / self.no_shots) * angle / self.projectile_mass,
+                        hitbox = self.projectile_hitbox
                     )
                 )
 
-class Projectiles:
-    despawn_distance = 1000 # Distance from the player before despawn
+from game.physicsEntity import PhysicsEntity
 
-    def __init__(self, sprite : Sprite, emitter : "Player", position : Vector2, damage : int, acc : Vector2, mass: float = 1):
-        self.sprite = sprite
+class Projectiles(PhysicsEntity):
+    despawn_distance = 1000 # Distance from the player before despawn
+    total_lifespan = 10 # Seconds
+    active = True # Gets deleted if inactive.
+
+    def __init__(self, emitter : "Player", damage : int, acc : Vector2, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.ground_friction = 1.05
+
         self.emitter = emitter
-        self.position = position
         self.speed = Vector2(0,0)
         self.acc = acc
         self.damage = damage
-        self.mass = mass
+        self.lifespan = 0
 
     def update(self, dt: float, level):
-        self.speed += self.acc * dt
-        self.position += self.speed*dt + self.acc * (dt ** 2) / 2
+        self.update_position(dt, level)
+
+        self.active = (self.position - level.player.position).length() < self.despawn_distance and self.lifespan < self.total_lifespan
 
         self.acc = Vector2(0, level.g)
+        self.lifespan +=  dt
 
