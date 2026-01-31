@@ -11,18 +11,18 @@ class Player:
     def __init__(self, 
         sprite: Sprite,  
         position: Vector2, 
-        jump_speed:float, 
         user_name : str,
-        speed = Vector2(0,0)
     ):
         self.inventory : List[Holdables] = []
         self.sprite = sprite 
         self.rect = self.sprite.rect
         self.position = position
-        self.speed = speed
-        self.jump_speed = jump_speed
+
+        self.speed = Vector2(0,0)
+
         self.user_name = user_name
-        self.address_mac = None
+        self.mac_address = None
+
         self.HP = 100
 
     def update(self, dt: float, level) -> None:
@@ -33,15 +33,6 @@ class Player:
             self.speed += acc.length() * 10 * v * dt
 
         self.update_position(dt, level)
-    
-    def jump(self) -> None:
-        self.speed = Vector2(self.speed.x, self.jump_speed)
-    
-    def snap_grid_x(self, level):
-        return Vector2(16 * level.scale * round(self.position.x / (16 * level.scale)), self.position.y)
-    
-    def snap_grid_y(self, level):
-        return Vector2(self.position.x, 16 * level.scale * round(self.position.y / (16 * level.scale)))
     
     def collide_rect(self, rect):
 

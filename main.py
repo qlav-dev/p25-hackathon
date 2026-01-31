@@ -27,7 +27,6 @@ def main(*args):
     level.player = game.Player(
         game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset=0),
         pg.Vector2(10, 0),
-        pg.Vector2(0, 0),
         user_name="Username"
     )
 
@@ -44,7 +43,7 @@ def main(*args):
 
         #   Physics update
         level.player.update(dt, level)
-        
+
         screen.blit(level.map.map_surf, (0,0))
         screen.blit(level.player.sprite.image, level.player.position)
         
