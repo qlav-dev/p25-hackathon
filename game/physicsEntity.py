@@ -26,7 +26,9 @@ class PhysicsEntity:
         self.acc = Vector2(0, 0)
 
         self.grounded = False
-        self.ground_friction = 1.2
+        self.ground_friction = 1.2 
+        self.grounded_timer = 10 # in frames, to prevent grounded from flickering
+        self.grounded_time = 0
 
         self.HP = 50
 
@@ -62,14 +64,16 @@ class PhysicsEntity:
             
         # Y
         self.position.y += self.speed.y * dt
+        self.grounded_time += 1
 
-        self.grounded = False
         for c in level.map.map_collider:
             if self.collide_rect(c):
-                if (self.speed.y > 0):
-                    self.grounded = True
-                    self.position.y = c.topleft[1] - self.sprite.rect.height + self.hitbox.topleft[1]
+                if (self.speed.y >= 0):
+                    self.grounded_time = 0
+                    self.position.y = c.topleft[1] - self.sprite.rect.height + self.hitbox.topleft[1] 
                     self.speed.x /= self.ground_friction
                 else:
                     self.position.y = c.topleft[1] + c.height - self.hitbox.topleft[1]
                 self.speed.y = 0
+        
+        self.grounded = self.grounded_time < self.grounded_timer

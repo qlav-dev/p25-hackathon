@@ -47,7 +47,7 @@ class Player(PhysicsEntity):
         self.avg_felt_g_y += alpha * (felt_g_y - self.avg_felt_g_y)
 
         # Animation
-        if self.avg_felt_g_y > .95:
+        if self.avg_felt_g_y > .90:
             self.sprite.set_texture_coordinates((0,0))
         elif self.avg_felt_g_y > .4:
             self.sprite.set_texture_coordinates((3,0))
@@ -58,6 +58,7 @@ class Player(PhysicsEntity):
         else:
             self.sprite.set_texture_coordinates((2,0))
         
+        print(self.grounded, self.avg_felt_g_y)
 
         # Acceleration reset
         self.acc = Vector2(0, level.g / self.mass) # After the update_position : If the gun is fired, resets the acc AFTER the position was updated
