@@ -30,7 +30,7 @@ def main(*args):
     #player init
     level.player = game.Player(
         sprite = game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset = randint(0, 1000) / 1000),
-        position = pg.Vector2(10, 0),
+        position = pg.Vector2(100, 0),
         user_name = "Username",
         mass = 5
     )

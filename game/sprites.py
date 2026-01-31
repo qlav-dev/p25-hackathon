@@ -60,10 +60,11 @@ class Sprite(pg.sprite.Sprite):
         self.texture = pg.Surface((self.size[0], self.size[1]), pg.SRCALPHA)
 
         self.hue_shift(self.hue_offset)
-        self.set_texture_coordinates(self.text_coordinates)
+        self.set_texture_coordinates(self.text_coordinates, True)
 
-    def set_texture_coordinates(self, coordinates: tuple) -> None:
-
+    def set_texture_coordinates(self, coordinates: tuple, force_update: bool = False) -> None:
+        if (coordinates == self.text_coordinates and not force_update):
+            return None
         self.text_coordinates = coordinates
         self.texture = pg.Surface((self.size[0], self.size[1]), pg.SRCALPHA)
 
