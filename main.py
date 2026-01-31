@@ -18,7 +18,8 @@ def main(*args):
 
     # Chargement des ressources
     player_spritesheet = pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha()
-    gun = pg.image.load(r"sprites/gun-basic.png").convert_alpha()
+    gun_sprite = pg.image.load(r"sprites/gun-basic.png").convert_alpha()
+    projectile_sprite = pg.image.load(r"sprites/projectile-basic.png").convert_alpha()
 
     # Creation du jeu:
     level = game.Level()
@@ -28,15 +29,19 @@ def main(*args):
     level.player = game.Player(
         sprite = game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset = 0),
         position = pg.Vector2(10, 0),
-        user_name = "Username"
+        user_name = "Username",
+        mass = 5
     )
 
     # Default gun
     level.player.inventory = [
         game.Gun(
-            sprite = game.Sprite(gun, (1,1), (0,0), level.scale, hue_offset = 0),
-            power = 10000,
-            recoil = .5
+            sprite = game.Sprite(gun_sprite, (1,1), (0,0), level.scale, hue_offset = 0),
+            power = 50000,
+            recoil = .5,
+            projectile_sprite = game.Sprite(projectile_sprite, (1,1), (0,0), level.scale, hue_offset = 0),
+            damage = 1,
+            projectile_mass = 1
         )
     ]
 
@@ -53,16 +58,34 @@ def main(*args):
                 mousePos = pg.Vector2(pg.mouse.get_pos())
                 if pg.mouse.get_pressed(3)[0]:
                     fire_direction = (level.player.position + pg.Vector2(level.player.rect.width / 2, level.player.rect.height / 2) - mousePos).normalize()
-                    level.player.inventory[level.player.holding].fire(level.player, fire_direction)
+                    level.player.inventory[level.player.holding].fire(level, fire_direction)
             
         screen.fill((255, 255, 255))
 
-        #   Physics update
+        # Physics update
+        level.player.inventory[level.player.holding].update(dt, level.player)
         level.player.update(dt, level)
 
-        screen.blit(level.map.map_surf, (0,0))
-        screen.blit(level.player.sprite.image, level.player.position)
+        for proj in level.projectiles:
+            proj.update(dt, level)
+
+        # Kills projectiles that are too far away
+        level.projectiles = [i for i in level.projectiles if (i.position - level.player.position).length() < i.despawn_distance]
+
+        # --- RENDER --- #
         
+        # Render map
+        screen.blit(level.map.map_surf, (0,0))
+        # Render player
+        screen.blit(level.player.sprite.image, level.player.position)
+        # Render gun
+        screen.blit(pg.transform.rotate(level.player.inventory[level.player.holding].sprite.image, 
+            180-(level.player.position + pg.Vector2(level.player.rect.width / 2, level.player.rect.height / 2) - pg.Vector2(pg.mouse.get_pos())).normalize().as_polar()[1])
+            , level.player.position)
+
+        # Render projectiles
+        for proj in level.projectiles:
+            screen.blit(proj.sprite.image, proj.position)
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s

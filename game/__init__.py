@@ -1,5 +1,5 @@
 from game.sprites import Sprite
-from game.holdables import Holdables, Gun
+from game.holdables import Holdables, Gun, Projectiles
 from game.Player import Player
 from game.level import Level
 from game.map import Map

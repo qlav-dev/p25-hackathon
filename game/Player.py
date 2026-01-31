@@ -3,7 +3,7 @@ from pygame import Vector2
 from game.sprites import Sprite
 from game.holdables import Holdables
 
-g = 50 # pesanteur
+g = 200 # pesanteur
 
 class Player:
     
@@ -11,19 +11,26 @@ class Player:
         sprite: Sprite,  
         position: Vector2, 
         user_name : str,
+        mass: float = 10
     ):
+        # Inventory
         self.inventory : List[Holdables] = []
         self.holding: int = 0 # Which inventory item is the player holding
 
+        # Graphic
         self.sprite = sprite 
         self.rect = self.sprite.rect
 
+        # Physics
+        self.mass = mass
+
         self.position = position
         self.speed = Vector2(0,0)
-        self.acc = Vector2(0, g)
+        self.acc = Vector2(0, 0)
 
         self.grounded = False
 
+        # Online
         self.user_name = user_name
         self.mac_address = None
 
@@ -31,7 +38,7 @@ class Player:
 
     def update(self, dt: float, level) -> None:
         self.update_position(dt, level)
-        self.acc = Vector2(0, g) # After the update_position : If the gun is fired, resets the acc AFTER the position was updated
+        self.acc = Vector2(0, level.g / self.mass) # After the update_position : If the gun is fired, resets the acc AFTER the position was updated
     
     def collide_rect(self, rect):
 
