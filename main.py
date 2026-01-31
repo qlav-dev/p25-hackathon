@@ -14,7 +14,7 @@ def main(*args):
     clock = pg.time.Clock() # Clock init
 
     # screen init
-    width, height = 16 * 16 * 3, 16 * 16 * 3
+    width, height = 16 * 16 * 2, 16 * 16 * 2
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 

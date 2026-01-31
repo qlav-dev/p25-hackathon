@@ -58,8 +58,6 @@ class Player(PhysicsEntity):
         else:
             self.sprite.set_texture_coordinates((2,0))
         
-        print(self.grounded, self.avg_felt_g_y)
-
         # Acceleration reset
         self.acc = Vector2(0, level.g / self.mass) # After the update_position : If the gun is fired, resets the acc AFTER the position was updated
     
