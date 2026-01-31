@@ -77,3 +77,5 @@ class PhysicsEntity:
                 else:
                     self.position.y = c.topleft[1] + c.height - self.hitbox.topleft[1]
                 self.speed.y = 0
+        
+        self.grounded = self.grounded_time < self.grounded_timer
