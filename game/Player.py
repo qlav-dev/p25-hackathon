@@ -30,7 +30,7 @@ class Player:
 
         self.grounded = False
 
-        self.ground_friction = 2
+        self.ground_friction = 1.2
 
         # Online
         self.user_name = user_name
