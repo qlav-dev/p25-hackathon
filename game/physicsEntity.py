@@ -3,16 +3,11 @@ from pygame import Vector2
 from game.sprites import Sprite
 
 class PhysicsEntity:
-    def __init__(self, 
-        sprite: Sprite,  
-        position: Vector2,
-        mass: int = 10,
-        hitbox: pg.rect.Rect = None
-    ):
+    def __init__(self, sprite: Sprite, position: Vector2, mass: int = 10, hitbox: pg.rect.Rect = None, speed: Vector2 = None, acceleration: Vector2 = None):
+
+        self.hitbox = hitbox
         if hitbox == None:
             self.hitbox = sprite.rect
-        else:
-            self.hitbox = hitbox
 
         # Graphic
         self.sprite = sprite 
@@ -22,8 +17,13 @@ class PhysicsEntity:
         self.mass = mass
 
         self.position = position
-        self.speed = Vector2(0,0)
-        self.acc = Vector2(0, 0)
+        self.speed = speed
+        if speed == None:
+            self.speed = Vector2(0, 0)
+        
+        self.acc = acceleration
+        if acceleration == None:
+            self.acc = Vector2(0, 0)
 
         self.grounded = False
         self.ground_friction = 1.2 

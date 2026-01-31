@@ -36,14 +36,12 @@ def main(*args):
     )
 
     triple_gun = game.prefabs.triple_gun(gun_sprite, projectile_sprite, level.scale)
-    # makes hitbox smaller
-    triple_gun.projectile_hitbox = pg.rect.Rect(level.scale * 7, level.scale * 7, level.scale * 2, level.scale * 2) 
+    triple_gun.projectile_hitbox = pg.rect.Rect(level.scale * 7, level.scale * 7, level.scale * 2, level.scale * 2) # makes hitbox smaller
 
     # Default gun
     level.player.inventory = [
-        triple_gun,
+        triple_gun
     ]
-
 
     running = True
     dt = 1
@@ -90,7 +88,6 @@ def main(*args):
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s
-
 
 
 if __name__ == "__main__":
