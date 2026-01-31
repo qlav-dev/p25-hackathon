@@ -30,6 +30,8 @@ class Player:
 
         self.grounded = False
 
+        self.ground_friction = 2
+
         # Online
         self.user_name = user_name
         self.mac_address = None
@@ -76,6 +78,7 @@ class Player:
                 if (self.speed.y > 0):
                     self.grounded = True
                     self.position.y = c.topleft[1] - player_height
+                    self.speed.x /= self.ground_friction
                 else:
                     self.position.y = c.topleft[1] + c.height
                 self.speed.y = 0
