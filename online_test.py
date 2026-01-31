@@ -15,7 +15,7 @@ def main(*args):
     clock = pg.time.Clock() # Clock init
 
     # screen init
-    width, height = 16 * 16 * 3, 16 * 16 * 3
+    width, height = 1000, 1000
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
@@ -25,6 +25,7 @@ def main(*args):
     # Creation du jeu:
     level = game.Level()
     level.map = game.getMap('sprites/example_map.png', 'sprites/example_hitbox_map.png',16 * level.scale)
+    print(level.map.map_collider)
     
     #player init
     level.player = game.Player(
@@ -59,8 +60,7 @@ def main(*args):
         screen.fill((255, 255, 255))
 
         #   Physics update
-        level.player.update(dt)
-        level.player.wall_collision_manager(level)
+        level.player.update(dt, level)
 
         screen.blit(level.player.sprite.image, level.player.position)
         screen.blit(level.map.map_surf, (0,0))

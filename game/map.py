@@ -1,7 +1,4 @@
-
 import pygame as pg
-
-
 
 class Map:
     map_surf: pg.Surface = None

@@ -43,9 +43,8 @@ def main(*args):
         screen.fill((255, 255, 255))
 
         #   Physics update
-        level.player.update(dt)
-        level.player.wall_collision_manager(level)
-
+        level.player.update(dt, level)
+        
         screen.blit(level.map.map_surf, (0,0))
         screen.blit(level.player.sprite.image, level.player.position)
         

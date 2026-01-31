@@ -32,7 +32,7 @@ def configWindow() -> list[str]:
 
     lbl = tk.Label(configWindow, width = 20, text=f"Hostname :")
     lbl.grid(row=1, column=3)
-    hostname = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"192.168.153.213"))
+    hostname = tk.Entry(configWindow, width = 20, textvariable=tk.StringVar(value=f"localhost"))
     hostname.grid(row=1, column=4)
 
     lbl = tk.Label(configWindow, width = 20, text=f"Port :")
