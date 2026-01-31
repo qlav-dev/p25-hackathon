@@ -73,19 +73,21 @@ def main(*args):
         level.projectiles = [i for i in level.projectiles if (i.position - level.player.position).length() < i.despawn_distance]
 
         # --- RENDER --- #
-        
-        # Render map
-        screen.blit(level.map.map_surf, (0,0))
+
         # Render player
         screen.blit(level.player.sprite.image, level.player.position)
+        
+        # Render projectiles
+        for proj in level.projectiles:
+            screen.blit(proj.sprite.image, proj.position)
+
+        # Render map
+        screen.blit(level.map.map_surf, (0,0))
+
         # Render gun
         screen.blit(pg.transform.rotate(level.player.inventory[level.player.holding].sprite.image, 
             180-(level.player.position + pg.Vector2(level.player.rect.width / 2, level.player.rect.height / 2) - pg.Vector2(pg.mouse.get_pos())).normalize().as_polar()[1])
             , level.player.position)
-
-        # Render projectiles
-        for proj in level.projectiles:
-            screen.blit(proj.sprite.image, proj.position)
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s
