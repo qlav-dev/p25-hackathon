@@ -14,7 +14,7 @@ def main(*args):
     clock = pg.time.Clock() # Clock init
 
     # screen init
-    width, height = 16 * 16 * 3, 16 * 16 * 3
+    width, height = 16 * 16 * 2, 16 * 16 * 2
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
@@ -36,14 +36,12 @@ def main(*args):
     )
 
     triple_gun = game.prefabs.triple_gun(gun_sprite, projectile_sprite, level.scale)
-    # makes hitbox smaller
-    triple_gun.projectile_hitbox = pg.rect.Rect(level.scale * 7, level.scale * 7, level.scale * 2, level.scale * 2) 
+    triple_gun.projectile_hitbox = pg.rect.Rect(level.scale * 7, level.scale * 7, level.scale * 2, level.scale * 2) # makes hitbox smaller
 
     # Default gun
     level.player.inventory = [
-        triple_gun,
+        triple_gun
     ]
-
 
     running = True
     dt = 1
@@ -90,7 +88,6 @@ def main(*args):
 
         pg.display.flip()
         dt = clock.tick(FPS_CAP) / 1000 # In s
-
 
 
 if __name__ == "__main__":

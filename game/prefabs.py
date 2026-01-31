@@ -1,5 +1,5 @@
 """
-This file contains some pre-fabricated objects (or methods that return pre-fabricated objects).
+This file contains some pre-fabricated objects (or methods that returns pre-fabricated objects).
 """
 
 from game.sprites import Sprite

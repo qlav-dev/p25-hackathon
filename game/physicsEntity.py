@@ -3,16 +3,11 @@ from pygame import Vector2
 from game.sprites import Sprite
 
 class PhysicsEntity:
-    def __init__(self, 
-        sprite: Sprite,  
-        position: Vector2,
-        mass: int = 10,
-        hitbox: pg.rect.Rect = None
-    ):
+    def __init__(self, sprite: Sprite, position: Vector2, mass: int = 10, hitbox: pg.rect.Rect = None, speed: Vector2 = None, acceleration: Vector2 = None):
+
+        self.hitbox = hitbox
         if hitbox == None:
             self.hitbox = sprite.rect
-        else:
-            self.hitbox = hitbox
 
         # Graphic
         self.sprite = sprite 
@@ -22,12 +17,19 @@ class PhysicsEntity:
         self.mass = mass
 
         self.position = position
-        self.speed = Vector2(0,0)
-        self.acc = Vector2(0, 0)
+        self.speed = speed
+        if speed == None:
+            self.speed = Vector2(0, 0)
+        
+        self.acc = acceleration
+        if acceleration == None:
+            self.acc = Vector2(0, 0)
 
         self.grounded = False
-        self.ground_friction = 1.2
+        self.ground_friction = 1.2 
         self.air_friction = 1.01
+        self.grounded_timer = 20 # in frames, to prevent grounded from flickering
+        self.grounded_time = 0
 
         self.HP = 50
 
@@ -64,18 +66,14 @@ class PhysicsEntity:
             
         # Y
         self.position.y += self.speed.y * dt
+        self.grounded_time += 1
 
-        self.grounded = False
         for c in level.map.map_collider:
             if self.collide_rect(c):
-                if (self.speed.y > 0):
-                    self.grounded = True
-                    self.position.y = c.topleft[1] - self.sprite.rect.height + self.hitbox.topleft[1]
+                if (self.speed.y >= 0):
+                    self.grounded_time = 0
+                    self.position.y = c.topleft[1] - self.sprite.rect.height + self.hitbox.topleft[1] 
                     self.speed.x /= self.ground_friction
                 else:
                     self.position.y = c.topleft[1] + c.height - self.hitbox.topleft[1]
                 self.speed.y = 0
-
-        #X: air friction
-        if not self.grounded:
-            self.speed.x /= self.air_friction
