@@ -9,7 +9,7 @@ class Image(Element):
         self._loaded_path = path
 
         self.image = pg.image.load(path)
-        self.image.convert() # Creates a copy to draw more quicky
+        self.image.convert() # Creates a copy to draw quicker
     
     def update(self):
         if self._loaded_path != self.path:

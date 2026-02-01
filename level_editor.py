@@ -2,6 +2,9 @@ import pygame as pg
 from game import Sprite
 import UI
 
+from tkinter import messagebox
+import subprocess
+
 def main():
     
     img_preview_size = (100, 100)
@@ -11,6 +14,9 @@ def main():
     pg.display.set_caption("Slimes With Guns: Level Editor")
 
     selected_spritesheet_image_path = "sprites/placeholder_texture.png"
+    def select_spritesheet_dialog():
+        # Opens a dialog without TK 
+        selected_spritesheet_image_path = subprocess.check_output(["osascript", "-e",'POSIX path of (choose file with prompt "Choose a file")']).decode().strip()
     
     """ -- UI DEFINITION -- """ 
 
@@ -18,7 +24,7 @@ def main():
     ressources_select_window.elements = [
         UI.Text("Current level spritesheet"),
         UI.Image(selected_spritesheet_image_path, size = img_preview_size),
-        UI.Button("Load spritesheet"),
+        UI.Button("Load spritesheet", on_click = select_spritesheet_dialog),
     ]
 
     object_editor_window = UI.Window("Object editor", position = [0, 300])
@@ -54,6 +60,8 @@ def main():
         ressources_select_window.update(pg.mouse.get_pressed(3)[0])
         level_settings_window.update(pg.mouse.get_pressed(3)[0])
         object_editor_window.update(pg.mouse.get_pressed(3)[0])
+
+        ressources_select_window.elements[1].path = selected_spritesheet_image_path
 
         screen.blit(ressources_select_window.get_surface(),  ressources_select_window.position)
         screen.blit(level_settings_window.get_surface(),  level_settings_window.position)
