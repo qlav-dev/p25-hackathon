@@ -11,8 +11,8 @@ class Level:
     player: Player = None
     other_players = [] # List of other players from online
     projectiles = [] # List of projectiles in game
-    g: float = 800 # Pesanteur
-    scale = 3
+    g: float = 200 # Pesanteur
+    scale = 1
 
 
 

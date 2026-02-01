@@ -18,6 +18,12 @@ def main(*args):
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("Slimes with guns")
 
+    # Camera Init
+    camera = game.Camera(
+        position = pg.Vector2(0,0)
+
+    )
+
     # Chargement des ressources
     player_spritesheet = pg.image.load(r"sprites/slime-basic-spritesheet.png").convert_alpha()
     gun_sprite = pg.image.load(r"sprites/gun-basic.png").convert_alpha()
@@ -31,7 +37,7 @@ def main(*args):
     level.player = game.Player(
         username = "Username",
         sprite = game.Sprite(player_spritesheet, (5, 1), (0, 0), level.scale, hue_offset = randint(0, 1000) / 1000),
-        position = pg.Vector2(100, 0),
+        position = pg.Vector2(50, 50),
         mass = 5,
     )
 

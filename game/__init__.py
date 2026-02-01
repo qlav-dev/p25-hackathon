@@ -4,6 +4,7 @@ from game.Player import Player
 from game.level import Level
 from game.map import Map
 from game.load_map import getMap
+from game.camera import Camera
 import game.prefabs
 
 from redis import Redis
