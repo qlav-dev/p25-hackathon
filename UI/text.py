@@ -19,9 +19,10 @@ class Text(Element):
         self.font: pg.font.Font = pg.font.SysFont(font, self.font_size)
     
     def _render(self) -> pg.Surface:
-        text_surface = self.font.render(self.text, False, self.color_2)
+        text_surface = self.font.render(self.text, False, self.colors[1])
 
-        self.size[0] = 1.5 * text_surface.get_width() + self.inner_margin[0] * 2
-        self.size[1] = text_surface.get_height() + self.inner_margin[1] * 2
+        if not self.force_size:
+            self.size[0] = 1.5 * text_surface.get_width() + self.inner_margin[0] * 2
+            self.size[1] = text_surface.get_height() + self.inner_margin[1] * 2
         
         return text_surface

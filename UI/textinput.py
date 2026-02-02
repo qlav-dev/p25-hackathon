@@ -1,19 +1,25 @@
 from UI.element import Element
 import pygame as pg
+from pygame import Color
 
 class TextInput(Element):
-    
-    # Uses pygame start_text_input() and stop_text_input()
+    """
+        The size argument is MENDATORY 
+
+        Uses pygame start_text_input() and stop_text_input()
+    """
         
     def __init__(self, place_holder: str = "Enter Your Text", 
                 text: str = "", 
                 active: bool = False,
                 font: str = 'Segoe UI', 
                 font_size = 12,
-                size: tuple[int, int] = (100, 25),
                 pressed = lambda: pg.mouse.get_pressed(3)[0], **kwargs):
-        
-        super().__init__(self)
+        """
+        The size argument is MENDATORY 
+        """
+
+        super().__init__(self, **kwargs)
         
         self.place_holder = place_holder
         self.text = text
@@ -21,12 +27,12 @@ class TextInput(Element):
         self.font_size = font_size
         self.font: pg.font.Font = pg.font.SysFont(font, self.font_size)
         
-        self.size = size
-        
         self.pressed = pressed
         self.active = active # Whether the text input is listening/waiting for user input
         
         self._last_pressed = False
+
+        self.colors = [Color(50, 50, 50, 90),Color(255, 255, 255, 255) ,Color(196, 196, 196, 150),Color(247, 40, 60, 150)]
     
     def update(self):
         pressed = self.pressed()
@@ -52,17 +58,17 @@ class TextInput(Element):
         
         text_surface = ...
         surface = pg.Surface(self.size, pg.SRCALPHA, 32)
-        
+
         if len(self.text) == 0:
             #Shows placeholder
-            text_surface = self.font.render(self.place_holder, False, self.color_3)
+            text_surface = self.font.render(self.place_holder, False, self.colors[2])
         else:
-            text_surface = self.font.render(self.text, False, self.color_2)
+            text_surface = self.font.render(self.text, False, self.colors[1])
         
         if self.active:
-            surface.fill(self.color_4)
+            surface.fill(self.colors[3])
         else:
-            surface.fill(self.color_1)
+            surface.fill(self.colors[0])
         
         surface.blit(text_surface, (0,0))
         

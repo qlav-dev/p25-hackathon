@@ -23,7 +23,8 @@ class Button(Element):
                 on_down: function = lambda: ...,
                 on_release: function = lambda: ...,
                 pressed = lambda: pg.mouse.get_pressed(3)[0],
-                border_radius: int = 2, **kwargs):
+                border_radius: int = 2, 
+                **kwargs):
         
         if not pg.font.get_init(): # Inits the font module
             pg.font.init()
@@ -60,15 +61,20 @@ class Button(Element):
         self._last_pressed = pressed
     
     def _render(self) -> pg.Surface:
-        text_surface = self.font.render(self.text, False, self.color_2)
-                    
-        button_rect = pg.Rect(0, 0, text_surface.get_width() + 2.0 * self.inner_margin[0], text_surface.get_height()  + 2.0 * self.inner_margin[1])
+        text_surface = self.font.render(self.text, False, self.colors[1])
 
-        surf = pg.Surface(button_rect.size, pg.SRCALPHA, 32)
+        if not self.force_size: # SUSSY
+            self.size = text_surface.get_size()
         
-        pg.draw.rect(surf, self.color_1 if not self.hovered() else self.color_3, button_rect, border_radius = self.border_radius)
+        btn_rect_size = (self.size[0] + 2.0 * self.inner_margin[0], self.size[1]  + 2.0 * self.inner_margin[1])
+        button_rect = pg.Rect(0, 0, *btn_rect_size)
+
+        surf = pg.Surface(btn_rect_size, pg.SRCALPHA, 32)
+        
+        pg.draw.rect(surf, self.colors[0] if not self.hovered() else self.colors[2], button_rect, border_radius = self.border_radius)
         surf.blit(text_surface, self.inner_margin)
-        
-        self.size = surf.get_size()
+
+        if not self.force_size:
+            self.size = surf.get_size()
         
         return surf

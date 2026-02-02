@@ -3,6 +3,9 @@ import pygame as pg
 
 class Image(Element):
     def __init__(self, path: str, **kwargs):
+        """
+            For this element, the size argument is MENDATORY ! 
+        """
         super().__init__(**kwargs)
 
         self.path = path

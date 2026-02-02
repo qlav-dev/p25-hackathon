@@ -2,6 +2,8 @@ from UI.element import Element
 from pygame.color import Color
 import pygame as pg
 
+from copy import copy
+
 class Window:
     """
     An UI window inside the pygame screen surface.
@@ -10,7 +12,7 @@ class Window:
     Everything in your UI is called an element, with some being buttons, text or sliders... 
     """ 
     
-    elements: Element = []
+    elements: list[Element] = []
     
     position: list[int, int] = [0,0]
     size: list[int, int] = [100, 100]
@@ -45,8 +47,8 @@ class Window:
         Propagates the window's color to its elements
         """
         for e in self.elements:
-            e.color_1 = self.color_1
-            e.color_2 = self.color_2
+            e.colors = copy(self.colors)
+            e.propagate_colors() # For elements that contain elements
     
     def append(self, item: Element):
         """
@@ -79,10 +81,7 @@ class Window:
 
         self.border_radius: int = 3
 
-        self.color_1 : Color = Color(50, 50, 50, 90)
-        self.color_2 : Color = Color(255, 255, 255, 255) 
-        self.color_3 : Color = Color(196, 196, 196, 150),
-        self.color_4 : Color = Color(247, 40, 60, 150),
+        self.colors : list[Color] = [Color(50, 50, 50, 90),Color(255, 255, 255, 255) ,Color(196, 196, 196, 150),Color(247, 40, 60, 150)]
         
         self._last_pressed = False
 
@@ -129,7 +128,7 @@ class Window:
             0, self.caption_bar_height, 
             self.size[0], self.size[1] - self.caption_bar_height)
         
-        caption_text = self.font.render(self.caption, False, self.color_2)
+        caption_text = self.font.render(self.caption, False, self.colors[1])
         
         # Caption Bar
         pg.draw.rect(surface = self.surface, color = self.caption_bar_color, rect = self.caption_bar,
@@ -137,7 +136,7 @@ class Window:
         
         self.surface.blit(caption_text, (10, 0))
         
-        pg.draw.rect(self.surface, self.color_1, main_frame, # Window body
+        pg.draw.rect(self.surface, self.colors[0], main_frame, # Window body
                     border_bottom_left_radius = self.border_radius, border_bottom_right_radius = self.border_radius) # Border radius
         
         top = None

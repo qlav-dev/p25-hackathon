@@ -2,12 +2,11 @@ import pygame as pg
 from game import Sprite
 import UI
 
-from tkinter import messagebox
-import subprocess
-
 def main():
     
     img_preview_size = (100, 100)
+
+    ui_windows = []
 
     screen_size = (1200, 700)
     screen = pg.display.set_mode(size = screen_size, flags = pg.RESIZABLE)
@@ -16,7 +15,8 @@ def main():
     selected_spritesheet_image_path = "sprites/placeholder_texture.png"
     def select_spritesheet_dialog():
         # Opens a dialog without TK 
-        selected_spritesheet_image_path = subprocess.check_output(["osascript", "-e",'POSIX path of (choose file with prompt "Choose a file")']).decode().strip()
+        selected_spritesheet_image_path = UI.ExplorerWindow()
+        ui_windows.append(UI.ExplorerWindow())
     
     """ -- UI DEFINITION -- """ 
 
@@ -37,15 +37,12 @@ def main():
         UI.Text("Placeholder")
     ]
 
-    ressources_select_window.auto_resize()
-    ressources_select_window.propagate_colors()
+    ui_windows = [ressources_select_window, object_editor_window, level_settings_window,  UI.ExplorerWindow()]
 
-    object_editor_window.auto_resize()
-    object_editor_window.propagate_colors()
+    for w in ui_windows:
+        w.propagate_colors()
+        w.auto_resize()
 
-    level_settings_window.auto_resize()
-    level_settings_window.propagate_colors()
-    
     """ -- Editor Environnmenet Definition --- """
 
     running = True
@@ -57,15 +54,11 @@ def main():
         screen.fill(pg.color.Color(100, 100, 100))
 
         # UI update
-        ressources_select_window.update(pg.mouse.get_pressed(3)[0])
-        level_settings_window.update(pg.mouse.get_pressed(3)[0])
-        object_editor_window.update(pg.mouse.get_pressed(3)[0])
+        for w in ui_windows:
+            w.update(pg.mouse.get_pressed(3)[0])
+            screen.blit(w.get_surface(),  w.position)
 
         ressources_select_window.elements[1].path = selected_spritesheet_image_path
-
-        screen.blit(ressources_select_window.get_surface(),  ressources_select_window.position)
-        screen.blit(level_settings_window.get_surface(),  level_settings_window.position)
-        screen.blit(object_editor_window.get_surface(),  object_editor_window.position)
 
         pg.display.flip()
         
