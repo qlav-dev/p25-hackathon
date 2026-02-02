@@ -3,7 +3,7 @@ from pygame.color import Color
 import pygame as pg
 
 from UI.button import Button
-from UI.columns import Column, Columns
+from UI.columns import Column, Row
 from UI.text import Text
 
 from copy import copy
@@ -104,11 +104,11 @@ class Window:
         self.closable = closable
 
         # Caption bar definition
-        self._caption_bar_element = Columns(columns = [Column(elements = [self._caption_text], margin = [5, 3])])
+        self._caption_bar_element = Row(elements = [Column(elements = [self._caption_text], margin = [5, 3])])
         if self.collapsable:
-            self._caption_bar_element.columns = [Column(elements = [self._collapse_button])] + self._caption_bar_element.columns
+            self._caption_bar_element.elements = [Column(elements = [self._collapse_button])] + self._caption_bar_element.elements
         if self.closable:
-            self._caption_bar_element.columns = [Column(elements = [self._close_button])] + self._caption_bar_element.columns
+            self._caption_bar_element.elements = [Column(elements = [self._close_button])] + self._caption_bar_element.elements
 
         self.border_radius: int = 3
 

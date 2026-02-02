@@ -6,6 +6,6 @@ from UI.button import Button
 from UI.text import Text
 from UI.image import Image
 from UI.explorerwindow import ExplorerWindow
-from UI.columns import Column, Columns
+from UI.columns import Column, Row
 from UI.spacer import Spacer
 from UI.scrollbox import ScrollBox

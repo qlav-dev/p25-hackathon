@@ -56,22 +56,21 @@ class Column(Element):
         
         return self._surf
 
-class Columns(Element):
+class Row(Element):
     """
     Allows to put multiple elements side by side.
-    columns is a LIST OF elements
 
     exemple of usage:
-    Columns(
-        columns = [
+    Row(
+        elements = [
             Column(elements = []), Column(elements = [])
         ]
     ) For a grid
 
     or as well, 
     
-        Columns(
-        columns = [
+        Row(
+        elements = [
             Element1, Element2
         ]
     ) 
@@ -79,19 +78,19 @@ class Columns(Element):
     The margin y IS ONLY applied on TOP
     """
 
-    def __init__(self, *args, columns: list[Column] = None, **kwargs):
+    def __init__(self, *args, elements: list[Element] = None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.columns = columns
-        if self.columns == None:
-            self.columns = []
+        self.elements = elements
+        if self.elements == None:
+            self.elements = []
         
         self.surf = None
 
     def update(self, *args, events: list[pg.event.Event] = [], **kwargs):
 
         x = 0
-        for e in self.columns:
+        for e in self.elements:
             e.relative_mouse_pos = [
                     self.relative_mouse_pos[0] - x,
                     self.relative_mouse_pos[1] - self.margin[1]
@@ -102,19 +101,19 @@ class Columns(Element):
             e.update(events = events)
     
     def propagate_colors(self):
-        for e in self.columns:
+        for e in self.elements:
             e.colors = copy(self.colors)
             e.propagate_colors()
 
     def _render(self):
         
-        child_elements_surfaces = [col.surface for col in self.columns]
-        col_widths = [col.size[0] for col in self.columns] # Width of columns
-        col_height = max(col.size[1] for col in self.columns) + self.margin[1] # Max of col height
+        child_elements_surfaces = [col.surface for col in self.elements]
+        col_widths = [col.size[0] for col in self.elements] # Width of columns
+        col_height = max(col.size[1] for col in self.elements) + self.margin[1] # Max of col height
 
         if not self.force_size:
             self.size = (
-                sum(col_widths) + (len(self.columns) - 1) * self.margin[0],
+                sum(col_widths) + (len(self.elements) - 1) * self.margin[0],
                 col_height,
             ) # Total size
 

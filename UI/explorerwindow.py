@@ -5,7 +5,7 @@ from UI.window import Window
 from UI.text import Text
 from UI.element import Element
 from UI.button import Button
-from UI.columns import Columns, Column
+from UI.columns import Row, Column
 from UI.spacer import Spacer
 from UI.textinput import TextInput
 from UI.scrollbox import ScrollBox
@@ -52,14 +52,14 @@ class ExplorerWindow(Window):
         self.go_to_parent_button.on_click = lambda: self.load_explorer(os.path.normpath(os.path.join(self.current_address, os.pardir)))
 
         self.explorer.elements = [
-                    Columns(columns = 
+                    Row(elements = 
                     [
                         Button(folder.removeprefix(walk[0]), size = [200, 17], force_size=True, on_release = lambda f = os.path.join(walk[0], folder): self.load_explorer(f)),
                         Text("Folder")
 
                     ]) for folder in folders
                 ] + [
-                    Columns(columns = 
+                    Row(elements = 
                     [
                         Button(file.removeprefix(walk[0]), size = [200, 17], force_size=True, on_click = lambda f = os.path.join(walk[0], file): self.select_file(f)),
                         Text("file")
@@ -87,19 +87,19 @@ class ExplorerWindow(Window):
         self.preview_image = Image(os.path.join(os.path.dirname(__file__), "ressources", "placeholder.png"), size = (100, 100))
 
         self.elements = [
-            Columns(columns = 
+            Row(elements = 
                 [
                     Column(elements=[Spacer(height = 5), self.address_input]), Column(elements=[Button("go to address", on_click = lambda: self.load_explorer(self.address_input.text)), self.go_to_parent_button])
                 ]
             ),
             Spacer(height = 10),
-            Columns(columns = 
+            Row(elements = 
                 [
                     Column(elements=[self.explorer]), Column(elements=[Text("File preview"), self.preview_image])
                 ]
             ),
             Spacer(height = 5),
-            Columns(columns = 
+            Row(elements = 
                 [
                     Button("Close", on_click = self.close), Spacer(width = 200, height=0), Button("Load file", on_click = self.finished)
                 ]
