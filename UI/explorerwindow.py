@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pygame as pg
 from UI.window import Window
 from UI.text import Text
@@ -6,69 +8,110 @@ from UI.button import Button
 from UI.columns import Columns, Column
 from UI.spacer import Spacer
 from UI.textinput import TextInput
+from UI.scrollbox import ScrollBox
+from UI.image import Image
 import os
 
+
 from copy import copy
+
+_COMPATIBLE_IMAGE_TYPES = ("BMP","GIF","JPEG","JPG","LBM", "PBM", "PGM", "PPM","PCX","PNG","PNM","SVG","TGA","XPM","TIFF","WEBP",)
 
 class ExplorerWindow(Window):
     """
         An UI window prompt to get file input
         Works without tkinter.
+
+        When file is selected, calls on_finished(file)
     """
+
+    def finished(self):
+        self._on_finished(self.select_file)
+        self._closed = True
+
+    def select_file(self, path):
+        extension = os.path.splitext(path)[1][1:]
+
+        if extension.upper() in _COMPATIBLE_IMAGE_TYPES:
+            self.preview_image.path = path
+        else:
+            self.preview_image.path = os.path.join(os.path.dirname(__file__), "ressources", "placeholder.png")
+
+        self.selected_file = path
 
     def load_explorer(self, path):
         """
         Updates explorer to scrollbox element at path path 
         """
         walk = os.walk(path).__next__()
-        files = walk[2]
         folders = walk[1]
+        files = walk[2]
 
-        print(path)
-        
-        self.explorer = ScrollBox(
-                elements = [
+        self.current_address = path
+        self.address_input.text = self.current_address
+        self.go_to_parent_button.on_click = lambda: self.load_explorer(os.path.normpath(os.path.join(self.current_address, os.pardir)))
+
+        self.explorer.elements = [
                     Columns(columns = 
                     [
                         Column(elements=
                             [
-                                Button(folder.removeprefix(walk[0]), size = [200, 15], force_size=True, pressed = lambda: self.load_explorer(folder)) for folder in folders
-                            ] +
-                            [
-                                Text(file.removeprefix(walk[0])) for file in files
+                                Button(folder.removeprefix(walk[0]), size = [200, 17], force_size=True, on_release = lambda f = os.path.join(walk[0], folder): self.load_explorer(f))
                             ]),
                         Column(elements=
                             [
-                                Text("Folder") for _ in folders
-                            ] + 
-                            [
-                                Text("File") for _ in files
+                                Text("Folder")
                             ])
-                    ]
-                    )
+                    ]) for folder in folders
+                ] + [
+                    Columns(columns = 
+                    [
+                        Column(elements=
+                            [
+                                Button(file.removeprefix(walk[0]), size = [200, 17], force_size=True, on_click = lambda f = os.path.join(walk[0], file): self.select_file(f))
+                            ]),
+                        Column(elements=
+                            [
+                                Text("file")
+                            ])
+                    ]) for file in files
                 ]
-            )
+
+        self.explorer.scroll_position = 0
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, on_finished: function = lambda: ..., **kwargs):
+        """
+        When file is selected, calls on_finished(file)
+        """
         super().__init__(*args, caption = "Select a file", **kwargs)
 
         self.current_address = os.path.abspath(os.getcwd())
+        self._on_finished = on_finished
+
+        self.selected_file = None
         
-        self.explorer = None
+        self.explorer = ScrollBox(elements=[])
+        self.address_input = TextInput(text=self.current_address, size = (400, 25))
+        self.go_to_parent_button = Button("Go to parent")
         self.load_explorer(os.getcwd())
+        self.preview_image = Image(os.path.join(os.path.dirname(__file__), "ressources", "placeholder.png"), size = (100, 100))
 
         self.elements = [
             Columns(columns = 
                 [
-                    Column(elements=[TextInput(text=self.current_address, size = (400, 25))]), Column(elements=[Button("go to address"), Button("Go to parent")])
+                    Column(elements=[Spacer(height = 5), self.address_input]), Column(elements=[Button("go to address"), self.go_to_parent_button])
                 ]
             ),
             Spacer(height = 10),
-            self.explorer,
+            Columns(columns = 
+                [
+                    Column(elements=[self.explorer]), Column(elements=[Text("File preview"), self.preview_image])
+                ]
+            ),
             Spacer(height = 5),
             Columns(columns = 
                 [
-                    Column(elements = [Button("Close")]), Column(elements = [Spacer(width = 100, height=0)]), Column(elements = [Button("Load file")])
+                    Column(elements = [Button("Close", on_click = self.close)]), Column(elements = [Spacer(width = 200, height=0)]), Column(elements = [Button("Load file", on_click = self.finished)])
                 ]
             )
         ]

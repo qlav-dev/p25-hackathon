@@ -14,16 +14,13 @@ class Window:
     
     elements: list[Element] = []
     
-    position: list[int, int] = [0,0]
-    size: list[int, int] = [100, 100]
-    
     caption_bar_height: int = 20
     caption_bar_text_size: int = 12
     caption_bar_color: Color = Color(10, 10, 255, 90)
     caption_bar: pg.rect = ...
     
     # Window getting dragged
-    dragging = False 
+    _dragging = False 
 
     border_radius: int = 3
 
@@ -31,6 +28,9 @@ class Window:
     surface = None
 
     movable = True
+
+    def close(self):
+        self._closed = True
     
     def auto_resize(self):
         for e in self.elements:
@@ -57,10 +57,13 @@ class Window:
         """
         self.elements.append(item)
     
-    def __init__(self, caption: str = "Window", font: str = "Segoe UI", caption_bar_text_size: int = 12, movable: int = True, position : list = None) -> None:
+    def __init__(self, caption: str = "Window", font: str = "Segoe UI", caption_bar_text_size: int = 12, movable: int = True, position : list = None, colors: list[Color] = None, size: list[int, int] = None) -> None:
         if not pg.font.get_init(): # Inits the font module
             pg.font.init()
             
+
+        self._closed = False
+
         self.caption = caption
         
         self.caption_bar_text_size = caption_bar_text_size
@@ -72,7 +75,9 @@ class Window:
         if self.position == None:
             self.position = [0,0]
 
-        self.size: list[int, int] = [100, 100]
+        self.size = size
+        if self.size == None:
+            self.size: list[int, int] = [100, 100]
 
         self.caption_bar_height: int = 20
         self.caption_bar_text_size: int = 12
@@ -81,7 +86,9 @@ class Window:
 
         self.border_radius: int = 3
 
-        self.colors : list[Color] = [Color(50, 50, 50, 90),Color(255, 255, 255, 255) ,Color(196, 196, 196, 150),Color(247, 40, 60, 150)]
+        self.colors = colors
+        if self.colors == None:
+            self.colors : list[Color] = [Color(50, 50, 50, 90),Color(255, 255, 255, 255) ,Color(196, 196, 196, 150),Color(247, 40, 60, 150)]
         
         self._last_pressed = False
 
@@ -94,12 +101,12 @@ class Window:
         )
         
         if self.movable and self.caption_bar.collidepoint(mp[0] - self.position[0], mp[1] - self.position[1]) and mouse_pressed:
-            self.dragging = True
+            self._dragging = True
         if not mouse_pressed:
-            self.dragging = False
+            self._dragging = False
 
         # Mouves the window if the caption bar is pressed
-        if self.dragging: 
+        if self._dragging: 
             self.position = [mp[0] - self.size[0] / 2.0, mp[1] - self.caption_bar_height / 2.0] # Center
         
         top = None

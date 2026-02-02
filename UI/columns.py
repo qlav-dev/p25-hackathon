@@ -14,7 +14,7 @@ class Column(Element):
             self.elements = []
 
         self.size = (0,0)
-        self.surf = None
+        self._surf = None
         self.vertical_margin = vertical_margin
 
     def propagate_colors(self):
@@ -45,17 +45,17 @@ class Column(Element):
             self.size = (max_width, height + self.vertical_margin * (len(self.elements) - 1))
 
         # Checks if needed to create new surface
-        if self.surf == None or self.surf.get_size() != self.size:
-            self.surf = pg.surface.Surface(self.size, pg.SRCALPHA, 32)
+        if self._surf == None or self._surf.get_size() != self.size:
+            self._surf = pg.surface.Surface(self.size, pg.SRCALPHA, 32)
         else:
-            self.surf.fill(pg.color.Color(0, 0, 0, 0)) # Otherwise, clears it
+            self._surf.fill(pg.color.Color(0, 0, 0, 0)) # Otherwise, clears it
 
         y = 0
         for i, e in enumerate(self.elements):
-            self.surf.blit(children_surfaces[i], (0, y))
+            self._surf.blit(children_surfaces[i], (0, y))
             y += self.vertical_margin + e.size[1]
         
-        return self.surf
+        return self._surf
 
 class Columns(Element):
     """

@@ -11,20 +11,20 @@ def main():
     screen_size = (1200, 700)
     screen = pg.display.set_mode(size = screen_size, flags = pg.RESIZABLE)
     pg.display.set_caption("Slimes With Guns: Level Editor")
-
-    selected_spritesheet_image_path = "sprites/placeholder_texture.png"
-    def select_spritesheet_dialog():
-        # Opens a dialog without TK 
-        selected_spritesheet_image_path = UI.ExplorerWindow()
-        ui_windows.append(UI.ExplorerWindow())
     
     """ -- UI DEFINITION -- """ 
 
+    selected_spritesheet_image_preview = UI.Image("sprites/placeholder_texture.png", size = img_preview_size)
     ressources_select_window = UI.Window("Ressources")
+
+    def select_spritesheet_dialog(file):
+        # Opens a dialog without TK 
+        selected_spritesheet_image_preview.path = file
+
     ressources_select_window.elements = [
         UI.Text("Current level spritesheet"),
-        UI.Image(selected_spritesheet_image_path, size = img_preview_size),
-        UI.Button("Load spritesheet", on_click = select_spritesheet_dialog),
+        selected_spritesheet_image_preview,
+        UI.Button("Load spritesheet", on_click = lambda: ui_windows.append(UI.ExplorerWindow(on_finished= select_spritesheet_dialog, position = [screen_size[0] / 2, screen_size[1] / 2]))),
     ]
 
     object_editor_window = UI.Window("Object editor", position = [0, 300])
@@ -37,7 +37,7 @@ def main():
         UI.Text("Placeholder")
     ]
 
-    ui_windows = [ressources_select_window, object_editor_window, level_settings_window,  UI.ExplorerWindow()]
+    ui_windows += [ressources_select_window, object_editor_window, level_settings_window]
 
     for w in ui_windows:
         w.propagate_colors()
@@ -58,7 +58,8 @@ def main():
             w.update(pg.mouse.get_pressed(3)[0])
             screen.blit(w.get_surface(),  w.position)
 
-        ressources_select_window.elements[1].path = selected_spritesheet_image_path
+            if w._closed: # Closes the windows
+                ui_windows.remove(w)
 
         pg.display.flip()
         

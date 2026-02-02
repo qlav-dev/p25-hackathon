@@ -43,10 +43,10 @@ class Button(Element):
         
         self._last_pressed = False
         
-        self.pressed = pressed
+        self._pressed = pressed
             
     def update(self):
-        pressed = self.pressed()
+        pressed = self._pressed()
         hovered = self.hovered()
         
         if hovered and pressed and not self._last_pressed: # Clicked

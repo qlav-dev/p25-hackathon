@@ -1,5 +1,6 @@
 from copy import copy
 import pygame as pg
+from UI.element import Element
 
 class ScrollBox(Element):
     """
@@ -51,7 +52,7 @@ class ScrollBox(Element):
             self.mouse_scrolled = False
         
         if (self.mouse_scrolled):
-            self.scroll_position = min(max(0, self.relative_mouse_pos[1] / (self.size[1] - self.scrollbar_rect_height)), 1)
+            self.scroll_position = min(max(0, (self.relative_mouse_pos[1] - self.scrollbar_rect_height / 2) / (self.size[1] - self.scrollbar_rect_height)), 1)
 
         # Updating child elements and their relative mouse positions
         top = - self.scroll_position * (self.child_total_height - self.size[1])
