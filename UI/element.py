@@ -15,8 +15,8 @@ class Element:
     
     def __init__(self,
         colors : list[Color] = None,
-        margin: list[int, int] = [10,0],
-        inner_margin: list[int, int] = [2,2],
+        margin: list[int, int] = None,
+        inner_margin: list[int, int] = None,
         anchor_mode: AnchorMode = AnchorMode.DEFAULT, # NOT YET IMPLEMENTED
         force_size: bool = False,
         size: list[int, int] = None,
@@ -30,16 +30,12 @@ class Element:
 
         self.force_size = force_size
         
-        self.size = size
-        if self.size == None:
-            self.size = [1,1]
+        self.margin = margin if margin is not None else [10, 0]
+        self.inner_margin = inner_margin if inner_margin is not None else [2,2]
 
-        self.colors = colors
-        if self.colors == None:
-            self.colors = [Color(50, 50, 50, 90), Color(20, 20, 100, 90), Color(196, 196, 196, 90), Color(247, 40, 60, 90)]
+        self.size = size if size is not None else [1, 1]
+        self.colors = colors if colors is not None else [Color(50, 50, 50, 90), Color(20, 20, 100, 90), Color(196, 196, 196, 90), Color(247, 40, 60, 90)]
 
-        self.margin = margin
-        self.inner_margin = inner_margin
         self.anchor_mode = anchor_mode
     
     def hovered(self) -> bool:
@@ -72,7 +68,7 @@ class Element:
         ...
         # The render function should return a surface representing the final element, and update the size of the element accordingly
         
-    def update(self):
+    def update(self, events: list[pg.event.Event]):
         """
         Must update the elements, as well as its children elements, and update their relative_mouse_pos
         """

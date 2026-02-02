@@ -26,7 +26,7 @@ class ExplorerWindow(Window):
     """
 
     def finished(self):
-        self._on_finished(self.select_file)
+        self._on_finished(self.selected_file)
         self._closed = True
 
     def select_file(self, path):
@@ -54,27 +54,17 @@ class ExplorerWindow(Window):
         self.explorer.elements = [
                     Columns(columns = 
                     [
-                        Column(elements=
-                            [
-                                Button(folder.removeprefix(walk[0]), size = [200, 17], force_size=True, on_release = lambda f = os.path.join(walk[0], folder): self.load_explorer(f))
-                            ]),
-                        Column(elements=
-                            [
-                                Text("Folder")
-                            ])
+                        Button(folder.removeprefix(walk[0]), size = [200, 17], force_size=True, on_release = lambda f = os.path.join(walk[0], folder): self.load_explorer(f)),
+                        Text("Folder")
+
                     ]) for folder in folders
                 ] + [
                     Columns(columns = 
                     [
-                        Column(elements=
-                            [
-                                Button(file.removeprefix(walk[0]), size = [200, 17], force_size=True, on_click = lambda f = os.path.join(walk[0], file): self.select_file(f))
-                            ]),
-                        Column(elements=
-                            [
-                                Text("file")
-                            ])
-                    ]) for file in files
+                        Button(file.removeprefix(walk[0]), size = [200, 17], force_size=True, on_click = lambda f = os.path.join(walk[0], file): self.select_file(f)),
+                        Text("file")
+                    ]
+                    ) for file in files
                 ]
 
         self.explorer.scroll_position = 0
@@ -83,7 +73,7 @@ class ExplorerWindow(Window):
         """
         When file is selected, calls on_finished(file)
         """
-        super().__init__(*args, caption = "Select a file", **kwargs)
+        super().__init__(*args, caption = "Select a file", closable = True, **kwargs)
 
         self.current_address = os.path.abspath(os.getcwd())
         self._on_finished = on_finished
@@ -99,7 +89,7 @@ class ExplorerWindow(Window):
         self.elements = [
             Columns(columns = 
                 [
-                    Column(elements=[Spacer(height = 5), self.address_input]), Column(elements=[Button("go to address"), self.go_to_parent_button])
+                    Column(elements=[Spacer(height = 5), self.address_input]), Column(elements=[Button("go to address", on_click = lambda: self.load_explorer(self.address_input.text)), self.go_to_parent_button])
                 ]
             ),
             Spacer(height = 10),
@@ -111,7 +101,7 @@ class ExplorerWindow(Window):
             Spacer(height = 5),
             Columns(columns = 
                 [
-                    Column(elements = [Button("Close", on_click = self.close)]), Column(elements = [Spacer(width = 200, height=0)]), Column(elements = [Button("Load file", on_click = self.finished)])
+                    Button("Close", on_click = self.close), Spacer(width = 200, height=0), Button("Load file", on_click = self.finished)
                 ]
             )
         ]

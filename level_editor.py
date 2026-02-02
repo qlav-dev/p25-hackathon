@@ -4,7 +4,7 @@ import UI
 
 def main():
     
-    img_preview_size = (100, 100)
+    img_preview_size = (200, 200)
 
     ui_windows = []
 
@@ -20,11 +20,21 @@ def main():
     def select_spritesheet_dialog(file):
         # Opens a dialog without TK 
         selected_spritesheet_image_preview.path = file
+    
+    def load_map_dialog(file):
+        ...
+
+    def save_map_dialog(file):
+        ...
 
     ressources_select_window.elements = [
+        UI.Columns(columns = [UI.Button("Load Map", on_click = lambda: ui_windows.append(UI.ExplorerWindow(on_finished= load_map_dialog, position = [screen_size[0] / 2, screen_size[1] / 2]))), 
+            UI.Button("Save Map", on_click = lambda: ui_windows.append(UI.ExplorerWindow(on_finished= save_map_dialog, position = [screen_size[0] / 2, screen_size[1] / 2]))),]),
         UI.Text("Current level spritesheet"),
         selected_spritesheet_image_preview,
         UI.Button("Load spritesheet", on_click = lambda: ui_windows.append(UI.ExplorerWindow(on_finished= select_spritesheet_dialog, position = [screen_size[0] / 2, screen_size[1] / 2]))),
+        UI.Columns(columns=
+        [UI.Column(elements= [UI.Text("Cell Size:")]), UI.Column(elements= [UI.TextInput(place_holder=("CellSize"), size = (100, 15))])])
     ]
 
     object_editor_window = UI.Window("Object editor", position = [0, 300])
@@ -47,7 +57,10 @@ def main():
 
     running = True
     while running:
+        events = []
         for e in pg.event.get():
+            events.append(e)
+
             if e.type == pg.QUIT:
                 running = False
 
@@ -55,7 +68,7 @@ def main():
 
         # UI update
         for w in ui_windows:
-            w.update(pg.mouse.get_pressed(3)[0])
+            w.update(pg.mouse.get_pressed(3)[0], events)
             screen.blit(w.get_surface(),  w.position)
 
             if w._closed: # Closes the windows

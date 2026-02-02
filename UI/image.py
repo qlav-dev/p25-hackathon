@@ -13,7 +13,7 @@ class Image(Element):
 
         self._image = pg.image.load(path).convert()
     
-    def update(self):
+    def update(self, *args, **kwargs):
         if self._loaded_path != self.path:
             self._image = pg.image.load(self.path)
             

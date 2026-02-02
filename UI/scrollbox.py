@@ -43,7 +43,7 @@ class ScrollBox(Element):
     def scrollbar_rect_hovered(self):
         return (self.scrollbar_rect.collidepoint(*self.relative_mouse_pos))
 
-    def update(self):
+    def update(self, *args, events: list[pg.event.Event] = [], **kwargs):
 
         if (self.scrollbar_rect_hovered() and pg.mouse.get_pressed(3)[0]):
             self.mouse_scrolled = True
@@ -64,7 +64,7 @@ class ScrollBox(Element):
 
             top += e.size[1] + self.margins[1]
 
-            e.update()
+            e.update(events = events)
     
     def _render(self) -> pg.Surface:
 

@@ -34,7 +34,7 @@ class TextInput(Element):
 
         self.colors = [Color(50, 50, 50, 90),Color(255, 255, 255, 255) ,Color(196, 196, 196, 150),Color(247, 40, 60, 150)]
     
-    def update(self):
+    def update(self, events: list[pg.event.Event] = []):
         pressed = self.pressed()
         hovered = self.hovered()
         
@@ -46,10 +46,16 @@ class TextInput(Element):
             else:
                 pg.key.stop_text_input()
         
+        # TEXT INPUT
         if self.active:
-            for event in pg.event.get():
-                if event.type == pg.TEXTINPUT:
-                    print(event)
+            for event in events:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_BACKSPACE:
+                        self.text = self.text[:-1]
+                    if event.key == pg.K_RETURN:
+                        self.active = False
+
+                elif event.type == pg.TEXTINPUT:
                     self.text += event.text
         
         self._last_pressed = pressed

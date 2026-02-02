@@ -45,7 +45,7 @@ class Button(Element):
         
         self._pressed = pressed
             
-    def update(self):
+    def update(self, *args, **kwargs):
         pressed = self._pressed()
         hovered = self.hovered()
         

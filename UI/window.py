@@ -2,6 +2,10 @@ from UI.element import Element
 from pygame.color import Color
 import pygame as pg
 
+from UI.button import Button
+from UI.columns import Column, Columns
+from UI.text import Text
+
 from copy import copy
 
 class Window:
@@ -18,9 +22,6 @@ class Window:
     caption_bar_text_size: int = 12
     caption_bar_color: Color = Color(10, 10, 255, 90)
     caption_bar: pg.rect = ...
-    
-    # Window getting dragged
-    _dragging = False 
 
     border_radius: int = 3
 
@@ -40,13 +41,13 @@ class Window:
             return None
         
         self.size[0] = max(E.width + E.margin[0] * 2.0 for E in self.elements)
-        self.size[1] = sum(E.height + E.margin[1] * 2.0 for E in self.elements) + self.caption_bar_height
+        self.size[1] = self.caption_bar_height + (not self.collapsed) * sum(E.height + E.margin[1] * 2.0 for E in self.elements)
     
     def propagate_colors(self):
         """
         Propagates the window's color to its elements
         """
-        for e in self.elements:
+        for e in self.elements + [self._caption_bar_element]:
             e.colors = copy(self.colors)
             e.propagate_colors() # For elements that contain elements
     
@@ -56,19 +57,23 @@ class Window:
             Same as Window.element.append()
         """
         self.elements.append(item)
+
+    def collapse(self):
+        self.collapsed = True - self.collapsed
+        self.auto_resize()
     
-    def __init__(self, caption: str = "Window", font: str = "Segoe UI", caption_bar_text_size: int = 12, movable: int = True, position : list = None, colors: list[Color] = None, size: list[int, int] = None) -> None:
+    def __init__(self, caption: str = "Window", font: str = "Segoe UI", caption_bar_text_size: int = 12, movable: bool = True, position : list = None, colors: list[Color] = None, size: list[int, int] = None, collapsed: bool = False, collapsable: bool = True, closable: bool = False) -> None:
         if not pg.font.get_init(): # Inits the font module
             pg.font.init()
             
 
         self._closed = False
 
-        self.caption = caption
-        
-        self.caption_bar_text_size = caption_bar_text_size
-        self.font = pg.font.SysFont(font, self.caption_bar_text_size)
-        
+        # Window getting dragged
+        self._dragging = False
+        self._dragging_from = (0,0)
+
+        # Elements inside the window
         self.elements: Element = []
         
         self.position: list[int, int] = position
@@ -79,10 +84,31 @@ class Window:
         if self.size == None:
             self.size: list[int, int] = [100, 100]
 
+        # Caption Bar settings
         self.caption_bar_height: int = 20
         self.caption_bar_text_size: int = 12
         self.caption_bar_color: Color = Color(10, 10, 255, 90)
         self.caption_bar: pg.rect = ...
+
+        self.caption = caption
+        
+        self.caption_bar_text_size = caption_bar_text_size
+        self.font = pg.font.SysFont(font, self.caption_bar_text_size)
+        
+        self.collapsed = collapsed
+        self._collapse_button = Button(text = "c", font_size = self.caption_bar_text_size, on_click = self.collapse,)
+        self._close_button = Button(text = "x", font_size = self.caption_bar_text_size, on_click = self.close, )
+        self._caption_text = Text(text = self.caption, font = font, font_size = self.caption_bar_text_size)
+
+        self.collapsable = collapsable
+        self.closable = closable
+
+        # Caption bar definition
+        self._caption_bar_element = Columns(columns = [Column(elements = [self._caption_text], margin = [5, 3])])
+        if self.collapsable:
+            self._caption_bar_element.columns = [Column(elements = [self._collapse_button])] + self._caption_bar_element.columns
+        if self.closable:
+            self._caption_bar_element.columns = [Column(elements = [self._close_button])] + self._caption_bar_element.columns
 
         self.border_radius: int = 3
 
@@ -92,27 +118,34 @@ class Window:
         
         self._last_pressed = False
 
-    def update(self, mouse_pressed: bool):
+    def update(self, mouse_pressed: bool, events: list[pg.event.Event]):
         mp = pg.mouse.get_pos() # Mouse position
         
         self.caption_bar = pg.Rect(
             0, 0,
             self.size[0], self.caption_bar_height
         )
+
+        # Updating the caption bar element -- BEFORE the window moves
+        self._caption_bar_element.relative_mouse_pos = (mp[0] - self.position[0] - self._caption_bar_element.margin[0], mp[1] - self.position[1])
+        self._caption_bar_element.update()
         
+        # window movement
         if self.movable and self.caption_bar.collidepoint(mp[0] - self.position[0], mp[1] - self.position[1]) and mouse_pressed:
             self._dragging = True
+            self._dragging_from = (mp[0] - self.position[0], mp[1] - self.position[1])
         if not mouse_pressed:
             self._dragging = False
 
-        # Mouves the window if the caption bar is pressed
+        # Moves the window if the caption bar is pressed
         if self._dragging: 
-            self.position = [mp[0] - self.size[0] / 2.0, mp[1] - self.caption_bar_height / 2.0] # Center
+            self.position = [mp[0] - self._dragging_from[0], mp[1] - self._dragging_from[1]] # Center
         
         top = None
         if len(self.elements) != 0:
             top = self.position[1] + self.caption_bar_height + self.elements[0].margin[1] # Distance from top of the window
 
+        # Updating everything
         for e in self.elements:
             
             e.relative_mouse_pos = (
@@ -120,7 +153,7 @@ class Window:
                 mp[1] - top - e.margin[1],
             )
             
-            e.update()
+            e.update(events = events)
             
             top += e.height + e.margin[1]
     
@@ -135,24 +168,27 @@ class Window:
             0, self.caption_bar_height, 
             self.size[0], self.size[1] - self.caption_bar_height)
         
-        caption_text = self.font.render(self.caption, False, self.colors[1])
-        
+
         # Caption Bar
         pg.draw.rect(surface = self.surface, color = self.caption_bar_color, rect = self.caption_bar,
                    border_top_left_radius = self.border_radius, border_top_right_radius = self.border_radius) # Border radius
-        
-        self.surface.blit(caption_text, (10, 0))
-        
-        pg.draw.rect(self.surface, self.colors[0], main_frame, # Window body
-                    border_bottom_left_radius = self.border_radius, border_bottom_right_radius = self.border_radius) # Border radius
-        
-        top = None
-        if len(self.elements) != 0:
-            top = self.caption_bar_height + self.elements[0].margin[1] # Distance from top of the window
 
-        for E in self.elements:
-            self.surface.blit(E.surface, (E.margin[0], top + E.margin[1]))
-            top += E.height + E.margin[1] * 2
+        caption_bar = self._caption_bar_element.surface
         
+        self.surface.blit(caption_bar, (10, 0))
+        
+        # drawing elements
+        if not self.collapsed:
+            pg.draw.rect(self.surface, self.colors[0], main_frame, # Window body
+                border_bottom_left_radius = self.border_radius, border_bottom_right_radius = self.border_radius) # Border radius
+
+            top = None
+            if len(self.elements) != 0:
+                top = self.caption_bar_height + self.elements[0].margin[1] # Distance from top of the window
+
+            for E in self.elements:
+                self.surface.blit(E.surface, (E.margin[0], top + E.margin[1]))
+                top += E.height + E.margin[1] * 2
+            
         return self.surface
         

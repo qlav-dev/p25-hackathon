@@ -7,33 +7,32 @@ class Column(Element):
     A column of elements.
     """
 
-    def __init__(self, *args, vertical_margin: int = 5, elements: list[Element] = None, **kwargs):
-
+    def __init__(self, *args, elements: list[Element] = None, **kwargs):
+        super().__init__(*args, **kwargs)
         self.elements = elements
         if self.elements == None:
             self.elements = []
 
         self.size = (0,0)
         self._surf = None
-        self.vertical_margin = vertical_margin
 
     def propagate_colors(self):
         for e in self.elements:
             e.colors = copy(self.colors)
             e.propagate_colors()
 
-    def update(self):
+    def update(self, *args, events: list[pg.event.Event] = [], **kwargs):
 
-        top = 0
+        top = self.margin[1]
         for e in self.elements:
             e.relative_mouse_pos = [
                 self.relative_mouse_pos[0],
                 self.relative_mouse_pos[1] - top
             ]
 
-            top += e.size[1] + self.vertical_margin
+            top += e.size[1] + self.margin[1]
 
-            e.update()
+            e.update(events = events)
     
     def _render(self):
 
@@ -42,7 +41,7 @@ class Column(Element):
         height = sum(i.size[1] for i in self.elements)
 
         if not self.force_size:
-            self.size = (max_width, height + self.vertical_margin * (len(self.elements) - 1))
+            self.size = (max_width, height + self.margin[1] * (len(self.elements) + 1))
 
         # Checks if needed to create new surface
         if self._surf == None or self._surf.get_size() != self.size:
@@ -50,48 +49,57 @@ class Column(Element):
         else:
             self._surf.fill(pg.color.Color(0, 0, 0, 0)) # Otherwise, clears it
 
-        y = 0
+        y = self.margin[1]
         for i, e in enumerate(self.elements):
             self._surf.blit(children_surfaces[i], (0, y))
-            y += self.vertical_margin + e.size[1]
+            y += self.margin[1] + e.size[1]
         
         return self._surf
 
 class Columns(Element):
     """
     Allows to put multiple elements side by side.
-    columns is a LIST OF COLUMN of elements.
+    columns is a LIST OF elements
 
     exemple of usage:
     Columns(
         columns = [
             Column(elements = []), Column(elements = [])
         ]
-    )
+    ) For a grid
+
+    or as well, 
+    
+        Columns(
+        columns = [
+            Element1, Element2
+        ]
+    ) 
+
+    The margin y IS ONLY applied on TOP
     """
 
-    def __init__(self, *args, columns: list[Column] = None, col_margin: int = 10, **kwargs):
+    def __init__(self, *args, columns: list[Column] = None, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.columns = columns
         if self.columns == None:
             self.columns = []
         
-        self.col_margin = col_margin
         self.surf = None
 
-    def update(self):
+    def update(self, *args, events: list[pg.event.Event] = [], **kwargs):
 
         x = 0
         for e in self.columns:
             e.relative_mouse_pos = [
                     self.relative_mouse_pos[0] - x,
-                    self.relative_mouse_pos[1]
+                    self.relative_mouse_pos[1] - self.margin[1]
                 ]
             
-            x += e.size[0] + self.col_margin
+            x += e.size[0] + self.margin[0]
 
-            e.update()
+            e.update(events = events)
     
     def propagate_colors(self):
         for e in self.columns:
@@ -102,11 +110,11 @@ class Columns(Element):
         
         child_elements_surfaces = [col.surface for col in self.columns]
         col_widths = [col.size[0] for col in self.columns] # Width of columns
-        col_height = max(col.size[1] for col in self.columns) # Max of col height
+        col_height = max(col.size[1] for col in self.columns) + self.margin[1] # Max of col height
 
         if not self.force_size:
             self.size = (
-                sum(col_widths) + (len(self.columns) - 1) * self.col_margin,
+                sum(col_widths) + (len(self.columns) - 1) * self.margin[0],
                 col_height,
             ) # Total size
 
@@ -118,7 +126,7 @@ class Columns(Element):
 
         x = 0   # X Position of col
         for i, col in enumerate(child_elements_surfaces):
-            self.surf.blit(col, (x, 0))
-            x += col_widths[i] + self.col_margin
+            self.surf.blit(col, (x, self.margin[1]))
+            x += col_widths[i] + self.margin[0]
 
         return self.surf
