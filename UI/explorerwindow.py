@@ -17,18 +17,8 @@ from copy import copy
 
 _COMPATIBLE_IMAGE_TYPES = ("BMP","GIF","JPEG","JPG","LBM", "PBM", "PGM", "PPM","PCX","PNG","PNM","SVG","TGA","XPM","TIFF","WEBP",)
 
-class ExplorerWindow(Window):
-    """
-        An UI window prompt to get file input
-        Works without tkinter.
-
-        When file is selected, calls on_finished(file)
-    """
-
-    def finished(self):
-        self._on_finished(self.selected_file)
-        self._closed = True
-
+class Explorer(Column):
+    
     def select_file(self, path):
         extension = os.path.splitext(path)[1][1:]
 
@@ -68,15 +58,12 @@ class ExplorerWindow(Window):
                 ]
 
         self.explorer.scroll_position = 0
+        self.explorer.propagate_colors()
     
-    def __init__(self, *args, on_finished: function = lambda: ..., **kwargs):
-        """
-        When file is selected, calls on_finished(file)
-        """
-        super().__init__(*args, caption = "Select a file", closable = True, **kwargs)
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
         self.current_address = os.path.abspath(os.getcwd())
-        self._on_finished = on_finished
 
         self.selected_file = None
         
@@ -99,12 +86,30 @@ class ExplorerWindow(Window):
                 ]
             ),
             Spacer(height = 5),
-            Row(elements = 
-                [
-                    Button("Close", on_click = self.close), Spacer(width = 200, height=0), Button("Load file", on_click = self.finished)
-                ]
-            )
         ]
+
+        self.propagate_colors()
+
+class ExplorerWindow(Window):
+    """
+        An UI window prompt to get file input
+        Works without tkinter.
+
+        When file is selected, calls on_finished(file)
+    """
+
+    def finished(self):
+        self._on_finished(self.elements[0].selected_file)
+        self._closed = True
+    
+    def __init__(self, *args, on_finished: function = lambda: ..., **kwargs):
+        """
+        When file is selected, calls on_finished(file)
+        """
+        super().__init__(*args, caption = "Select a file", closable = True, **kwargs)
+        self._on_finished = on_finished
+
+        self.elements = [Explorer(), Button("Load file", on_click = self.finished)]
 
         self.propagate_colors()
         self.auto_resize()

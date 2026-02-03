@@ -4,6 +4,16 @@ from UI.element import Element
 import pygame as pg
 
 class Button(Element):
+    """
+
+    An UI button.
+
+    Calls on_click on click, on_down if down and on_release on release.
+    The default press trigger is left mouse button.
+
+    You can access the state with clicked and down.
+
+    """
     text: str = ""
     font_size : int = 12
     
@@ -22,7 +32,7 @@ class Button(Element):
                 on_click: function = lambda: ...,
                 on_down: function = lambda: ...,
                 on_release: function = lambda: ...,
-                pressed = lambda: pg.mouse.get_pressed(3)[0],
+                press_trigger = lambda: pg.mouse.get_pressed(3)[0],
                 border_radius: int = 2, 
                 **kwargs):
         
@@ -43,19 +53,28 @@ class Button(Element):
         
         self._last_pressed = False
         
-        self._pressed = pressed
+        self.press_trigger = press_trigger
+
+        # True if button was {} during last frame
+        self.clicked = False
+        self.released = False 
             
     def update(self, *args, **kwargs):
-        pressed = self._pressed()
+        pressed = self.press_trigger()
         hovered = self.hovered()
+
+        self.clicked = False
+        self.released = False 
         
         if hovered and pressed and not self._last_pressed: # Clicked
+            self.clicked = True
             self.on_click()
             
         if hovered and pressed: # Down
             self.on_down()
             
         if hovered and not pressed and self._last_pressed: # Released
+            self.released = True
             self.on_release()
             
         self._last_pressed = pressed
@@ -63,18 +82,17 @@ class Button(Element):
     def _render(self) -> pg.Surface:
         text_surface = self.font.render(self.text, False, self.colors[1])
 
+        surf_size = text_surface.get_size()
         if not self.force_size: # SUSSY
-            self.size = text_surface.get_size()
+            self.size = (surf_size[0] + 2 * self.margin[0], surf_size[1] + 2 * self.margin[1])
         
-        btn_rect_size = (self.size[0] + 2.0 * self.inner_margin[0], self.size[1]  + 2.0 * self.inner_margin[1])
-        button_rect = pg.Rect(0, 0, *btn_rect_size)
+        button_rect = pg.Rect(*self.margin, *surf_size)
 
-        surf = pg.Surface(btn_rect_size, pg.SRCALPHA, 32)
+        surf = pg.Surface(self.size, pg.SRCALPHA, 32)
         
         pg.draw.rect(surf, self.colors[0] if not self.hovered() else self.colors[2], button_rect, border_radius = self.border_radius)
-        surf.blit(text_surface, self.inner_margin)
+        surf.blit(text_surface, self.margin)
 
-        if not self.force_size:
-            self.size = surf.get_size()
+        #pg.draw.circle(surf, pg.color.Color(255, 0, 0), self.relative_mouse_pos, 3)
         
         return surf

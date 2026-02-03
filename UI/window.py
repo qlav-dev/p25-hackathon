@@ -14,9 +14,9 @@ class Window:
     Returns a surface with transparent backround, ready to be blit into your project's screen
     
     Everything in your UI is called an element, with some being buttons, text or sliders... 
+
+    Use get_element_by_{id/ labels} to find an element
     """ 
-    
-    elements: list[Element] = []
     
     caption_bar_height: int = 20
     caption_bar_text_size: int = 12
@@ -34,38 +34,72 @@ class Window:
         self._closed = True
     
     def auto_resize(self):
-        for e in self.elements:
-            e.surface
-
-        if (len(self.elements) == 0):
+        if (len(self.body.elements) == 0):
             return None
         
-        self.size[0] = max(E.width + E.margin[0] * 2.0 for E in self.elements)
-        self.size[1] = self.caption_bar_height + (not self.collapsed) * sum(E.height + E.margin[1] * 2.0 for E in self.elements)
+        self.body.surface
+        self.caption_bar.surface
+        self.size[0] = self.body.size[0]
+        self.size[1] = self.caption_bar_height + (not self.collapsed) * self.body.size[1]
     
     def propagate_colors(self):
         """
         Propagates the window's color to its elements
         """
-        for e in self.elements + [self._caption_bar_element]:
-            e.colors = copy(self.colors)
-            e.propagate_colors() # For elements that contain elements
-    
+        self.caption_bar.colors = copy(self.colors)
+        self.caption_bar.propagate_colors()
+        self.body.colors = copy(self.colors)
+        self.body.propagate_colors()
+
     def append(self, item: Element):
         """
             Appends an element.
             Same as Window.element.append()
         """
-        self.elements.append(item)
+        self.body.elements.append(item)
+
+    @property
+    def elements(self):
+        return self.body.elements
+
+    @elements.setter
+    def elements(self, val: list[Element]):
+        self.body.elements = val
+
+    @property 
+    def margin(self):
+        return self.body.margin
+    
+    @margin.setter
+    def margin(self, val):
+        self.body.margin = val
 
     def collapse(self):
         self.collapsed = True - self.collapsed
         self.auto_resize()
+
+    def get_element_by_label(self, label: str):
+        return self.body.find_by_label(label)
+
+    def get_element_by_id(self, id: int):
+        return self.body.find_by_id(id)
     
-    def __init__(self, caption: str = "Window", font: str = "Segoe UI", caption_bar_text_size: int = 12, movable: bool = True, position : list = None, colors: list[Color] = None, size: list[int, int] = None, collapsed: bool = False, collapsable: bool = True, closable: bool = False) -> None:
+    def __init__(self, 
+        caption: str = "Window", 
+        font: str = "Segoe UI", 
+        caption_bar_text_size: int = 12, 
+        movable: bool = True, 
+        margin: list[int, int] = None, 
+        position : list = None, 
+        colors: list[Color] = None, 
+        size: list[int, int] = None, 
+        collapsed: bool = False, 
+        collapsable: bool = True, 
+        closable: bool = False
+    ) -> None:
+    
         if not pg.font.get_init(): # Inits the font module
-            pg.font.init()
-            
+            pg.font.init()        
 
         self._closed = False
 
@@ -73,8 +107,9 @@ class Window:
         self._dragging = False
         self._dragging_from = (0,0)
 
-        # Elements inside the window
-        self.elements: Element = []
+        # The window body element is by default a column
+        self.body = Column()
+        self.margin = margin if margin is not None else [10, 10]
         
         self.position: list[int, int] = position
         if self.position == None:
@@ -85,10 +120,8 @@ class Window:
             self.size: list[int, int] = [100, 100]
 
         # Caption Bar settings
-        self.caption_bar_height: int = 20
         self.caption_bar_text_size: int = 12
         self.caption_bar_color: Color = Color(10, 10, 255, 90)
-        self.caption_bar: pg.rect = ...
 
         self.caption = caption
         
@@ -96,19 +129,19 @@ class Window:
         self.font = pg.font.SysFont(font, self.caption_bar_text_size)
         
         self.collapsed = collapsed
-        self._collapse_button = Button(text = "c", font_size = self.caption_bar_text_size, on_click = self.collapse,)
-        self._close_button = Button(text = "x", font_size = self.caption_bar_text_size, on_click = self.close, )
-        self._caption_text = Text(text = self.caption, font = font, font_size = self.caption_bar_text_size)
+        self._collapse_button = Button(text = "c", font_size = self.caption_bar_text_size, on_click = self.collapse, margin = [0, 0])
+        self._close_button = Button(text = "x", font_size = self.caption_bar_text_size, on_click = self.close, margin = [0, 0])
+        self._caption_text = Text(text = self.caption, font = font, font_size = self.caption_bar_text_size, margin = [0, 0])
 
         self.collapsable = collapsable
         self.closable = closable
 
         # Caption bar definition
-        self._caption_bar_element = Row(elements = [Column(elements = [self._caption_text], margin = [5, 3])])
+        self.caption_bar = Row(elements = [Column(elements = [self._caption_text], margin = [5, 5])])
         if self.collapsable:
-            self._caption_bar_element.elements = [Column(elements = [self._collapse_button])] + self._caption_bar_element.elements
+            self.caption_bar.elements = [Column(elements = [self._collapse_button])] + self.caption_bar.elements
         if self.closable:
-            self._caption_bar_element.elements = [Column(elements = [self._close_button])] + self._caption_bar_element.elements
+            self.caption_bar.elements = [Column(elements = [self._close_button])] + self.caption_bar.elements
 
         self.border_radius: int = 3
 
@@ -121,17 +154,17 @@ class Window:
     def update(self, mouse_pressed: bool, events: list[pg.event.Event]):
         mp = pg.mouse.get_pos() # Mouse position
         
-        self.caption_bar = pg.Rect(
+        self.caption_bar_rect = pg.Rect(
             0, 0,
-            self.size[0], self.caption_bar_height
+            self.size[0], self.caption_bar.size[1]
         )
 
         # Updating the caption bar element -- BEFORE the window moves
-        self._caption_bar_element.relative_mouse_pos = (mp[0] - self.position[0] - self._caption_bar_element.margin[0], mp[1] - self.position[1])
-        self._caption_bar_element.update()
+        self.caption_bar.relative_mouse_pos = (mp[0] - self.position[0], mp[1] - self.position[1])
+        self.caption_bar.update()
         
         # window movement
-        if self.movable and self.caption_bar.collidepoint(mp[0] - self.position[0], mp[1] - self.position[1]) and mouse_pressed:
+        if self.movable and self.caption_bar_rect.collidepoint(mp[0] - self.position[0], mp[1] - self.position[1]) and pg.MOUSEBUTTONDOWN in [e.type for e in events] and mouse_pressed:
             self._dragging = True
             self._dragging_from = (mp[0] - self.position[0], mp[1] - self.position[1])
         if not mouse_pressed:
@@ -141,21 +174,14 @@ class Window:
         if self._dragging: 
             self.position = [mp[0] - self._dragging_from[0], mp[1] - self._dragging_from[1]] # Center
         
-        top = None
-        if len(self.elements) != 0:
-            top = self.position[1] + self.caption_bar_height + self.elements[0].margin[1] # Distance from top of the window
-
         # Updating everything
-        for e in self.elements:
             
-            e.relative_mouse_pos = (
-                mp[0] - self.position[0] - e.margin[0],
-                mp[1] - top - e.margin[1],
-            )
+        self.body.relative_mouse_pos = (
+            mp[0] - self.position[0],
+            mp[1] - self.position[1] - self.caption_bar.size[1],
+        )
             
-            e.update(events = events)
-            
-            top += e.height + e.margin[1]
+        self.body.update(events = events)
     
     def get_surface(self) -> pg.surface:
         """
@@ -165,30 +191,23 @@ class Window:
             self.surface = pg.Surface(self.size, pg.SRCALPHA, 32)
         
         main_frame = pg.Rect(
-            0, self.caption_bar_height, 
-            self.size[0], self.size[1] - self.caption_bar_height)
+            0, self.caption_bar.size[1], 
+            self.size[0], self.size[1] - self.caption_bar.size[1])
         
-
         # Caption Bar
-        pg.draw.rect(surface = self.surface, color = self.caption_bar_color, rect = self.caption_bar,
+        pg.draw.rect(surface = self.surface, color = self.caption_bar_color, rect = self.caption_bar_rect,
                    border_top_left_radius = self.border_radius, border_top_right_radius = self.border_radius) # Border radius
 
-        caption_bar = self._caption_bar_element.surface
+        caption_bar = self.caption_bar.surface
         
-        self.surface.blit(caption_bar, (10, 0))
+        self.surface.blit(caption_bar, (0, 0))
         
         # drawing elements
         if not self.collapsed:
             pg.draw.rect(self.surface, self.colors[0], main_frame, # Window body
                 border_bottom_left_radius = self.border_radius, border_bottom_right_radius = self.border_radius) # Border radius
 
-            top = None
-            if len(self.elements) != 0:
-                top = self.caption_bar_height + self.elements[0].margin[1] # Distance from top of the window
+            self.surface.blit(self.body.surface, (0, self.caption_bar.size[1]))
 
-            for E in self.elements:
-                self.surface.blit(E.surface, (E.margin[0], top + E.margin[1]))
-                top += E.height + E.margin[1] * 2
-            
         return self.surface
         

@@ -39,6 +39,7 @@ class ScrollBox(Element):
     def propagate_colors(self):
         for e in self.elements:
             e.colors = copy(self.colors)
+            e.propagate_colors()
 
     def scrollbar_rect_hovered(self):
         return (self.scrollbar_rect.collidepoint(*self.relative_mouse_pos))
@@ -75,7 +76,7 @@ class ScrollBox(Element):
         max_element_width = max(e.size[0] for e in self.elements)
 
         if not self.force_size:
-            self.size = (max_element_width + self.scrollbar_width, self.height)
+            self.size = (max_element_width + self.scrollbar_width + 2 * self.margin[0], self.height + 2 * self.margin[1])
 
         # Checks if needed to create new surface
         if self.surf == None or self.surf.get_size() != self.size:

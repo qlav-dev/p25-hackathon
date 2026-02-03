@@ -7,6 +7,8 @@ class TextInput(Element):
         The size argument is MENDATORY 
 
         Uses pygame start_text_input() and stop_text_input()
+
+        input_type is the datatype of the input. (Ex: int, str, float...)
     """
         
     def __init__(self, place_holder: str = "Enter Your Text", 
@@ -14,12 +16,19 @@ class TextInput(Element):
                 active: bool = False,
                 font: str = 'Segoe UI', 
                 font_size = 12,
-                pressed = lambda: pg.mouse.get_pressed(3)[0], **kwargs):
+                pressed = lambda: pg.mouse.get_pressed(3)[0],
+                input_type: type = str,
+                **kwargs):
         """
         The size argument is MENDATORY 
         """
 
         super().__init__(self, **kwargs)
+
+        self.input_type = input_type
+
+        self.text_area_size = self.size
+        self.size = (self.size[0] + 2 * self.margin[0], self.size[1] + 2 * self.margin[1])
         
         self.place_holder = place_holder
         self.text = text
@@ -56,7 +65,10 @@ class TextInput(Element):
                         self.active = False
 
                 elif event.type == pg.TEXTINPUT:
-                    self.text += event.text
+                    try:
+                        self.text = str(self.input_type(self.text + event.text))
+                    except:
+                        None
         
         self._last_pressed = pressed
     
@@ -72,10 +84,10 @@ class TextInput(Element):
             text_surface = self.font.render(self.text, False, self.colors[1])
         
         if self.active:
-            surface.fill(self.colors[3])
+            pg.draw.rect(surface, self.colors[3], pg.rect.Rect(*self.margin, *self.size))
         else:
-            surface.fill(self.colors[0])
+            pg.draw.rect(surface, self.colors[0], pg.rect.Rect(*self.margin, *self.size))
         
-        surface.blit(text_surface, (0,0))
+        surface.blit(text_surface, self.margin)
         
         return surface

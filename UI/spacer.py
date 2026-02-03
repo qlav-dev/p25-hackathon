@@ -11,13 +11,10 @@ class Spacer(Element):
         self.width = width
         self.height = height
 
-        self.size = (width, height)
         self.surf = pg.Surface((self.size), pg.SRCALPHA, 32)
     
     def _render(self):
-        if not self.force_size: # Goofy
-            self.size = (self.width, self.height)
-        
+                
         if self.surf.get_size != self.size:
             self.surf = pg.Surface((self.size), pg.SRCALPHA, 32)
         

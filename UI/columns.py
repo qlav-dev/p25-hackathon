@@ -26,13 +26,12 @@ class Column(Element):
         top = self.margin[1]
         for e in self.elements:
             e.relative_mouse_pos = [
-                self.relative_mouse_pos[0],
+                self.relative_mouse_pos[0] - self.margin[0],
                 self.relative_mouse_pos[1] - top
             ]
 
-            top += e.size[1] + self.margin[1]
-
             e.update(events = events)
+            top += e.size[1]
     
     def _render(self):
 
@@ -40,19 +39,23 @@ class Column(Element):
         max_width = max(i.size[0] for i in self.elements)
         height = sum(i.size[1] for i in self.elements)
 
+        # -- UPDATE SIZE -- 
         if not self.force_size:
-            self.size = (max_width, height + self.margin[1] * (len(self.elements) + 1))
+            self.size = (max_width + self.margin[0] * 2, height + self.margin[1] * 2)
 
         # Checks if needed to create new surface
         if self._surf == None or self._surf.get_size() != self.size:
             self._surf = pg.surface.Surface(self.size, pg.SRCALPHA, 32)
         else:
             self._surf.fill(pg.color.Color(0, 0, 0, 0)) # Otherwise, clears it
-
+            
+        # RENDERING
         y = self.margin[1]
         for i, e in enumerate(self.elements):
-            self._surf.blit(children_surfaces[i], (0, y))
-            y += self.margin[1] + e.size[1]
+            self._surf.blit(children_surfaces[i], (self.margin[0], y))
+            y += e.size[1]
+
+        #pg.draw.circle(self._surf, pg.color.Color(0, 0, 255), self.relative_mouse_pos, 3)
         
         return self._surf
 
@@ -74,8 +77,6 @@ class Row(Element):
             Element1, Element2
         ]
     ) 
-
-    The margin y IS ONLY applied on TOP
     """
 
     def __init__(self, *args, elements: list[Element] = None, **kwargs):
@@ -89,16 +90,15 @@ class Row(Element):
 
     def update(self, *args, events: list[pg.event.Event] = [], **kwargs):
 
-        x = 0
+        x = self.margin[0]
         for e in self.elements:
             e.relative_mouse_pos = [
                     self.relative_mouse_pos[0] - x,
                     self.relative_mouse_pos[1] - self.margin[1]
                 ]
             
-            x += e.size[0] + self.margin[0]
-
             e.update(events = events)
+            x += e.size[0]
     
     def propagate_colors(self):
         for e in self.elements:
@@ -111,10 +111,11 @@ class Row(Element):
         col_widths = [col.size[0] for col in self.elements] # Width of columns
         col_height = max(col.size[1] for col in self.elements) + self.margin[1] # Max of col height
 
+        # -- SIZE UPDATE --
         if not self.force_size:
             self.size = (
-                sum(col_widths) + (len(self.elements) - 1) * self.margin[0],
-                col_height,
+                sum(col_widths) + 2 * self.margin[0],
+                col_height + 2 * self.margin[1],
             ) # Total size
 
         # Checks if needed to create new surface
@@ -123,9 +124,12 @@ class Row(Element):
         else:
             self.surf.fill(pg.color.Color(0, 0, 0, 0)) # Otherwise, clears it
 
-        x = 0   # X Position of col
+        # Rendering
+        x = self.margin[0]   # X Position of col
         for i, col in enumerate(child_elements_surfaces):
             self.surf.blit(col, (x, self.margin[1]))
-            x += col_widths[i] + self.margin[0]
+            x += col_widths[i]
+
+        #pg.draw.circle(self.surf, pg.color.Color(0, 255, 0), self.relative_mouse_pos, 3)
 
         return self.surf
